@@ -5,4 +5,5 @@ Man in the middle (Impersonating client/server maybe?)
     Eavesdropping (Listening and understanding communications)
 Buffer overflows (giving atm lots of input that is bad input)
 Denial of Service (not failing server when it gets a bad input)
-Pasword guessing attack 
+Password guessing attack 
+Integer overflow 
