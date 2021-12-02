@@ -523,10 +523,19 @@ int main(int argc, char** argv){
 	unsigned char decrypted_msg_rec2[300];
 	int decrypted_length_rec2 = sym_decrypt(buffer_rec2,208,sym_key,iv,decrypted_msg_rec2);
 	printf("DEBUG: Received decrypted message of size %d containing:(\n",decrypted_length_rec2);
-	for(int i=0;i<decrypted_length_rec2;i++){
+	for(int i=0;i<122;i++){
 		printf("%c",decrypted_msg_rec2[i]);
 	}
-	printf(")msg\n");
+	printf(" acct\n");
+	for(int i=122;i<122+32;i++){
+		printf("%c",decrypted_msg_rec2[i]);
+	}
+	printf(" val\n");
+	
+	for(int i=122+32;i<122+32+32;i++){
+		printf("%c",decrypted_msg_rec2[i]);
+	}
+	printf(" card\n");
 	
 		// encrypt here 
 		// unsigned char *ciphertext = malloc(300*sizeof(char*));
