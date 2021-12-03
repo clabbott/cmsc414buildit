@@ -12,8 +12,7 @@ int main(int argc, char** argv){
 
 	// welcome to parsing hell
 	int i = 1;
-	/*
-	this is a bit complicated but work with me here
+	/* this is a bit complicated but work with me here
 	recval_locs[0] corresponds to -s <auth> location in argv
 	recval_locs[1] corresponds to -i <ip-addr> location in argv
 	recval_locs[2] corresponds to -p <port> location in argv
@@ -147,9 +146,45 @@ int main(int argc, char** argv){
 	}
 
 	for(int i=0;i<6;i++){
-		printf("recval_locs[%d] value is %d\n",i,recval_locs[i]);
+		printf("DEBUG: recval_locs[%d] value is %d\n",i,recval_locs[i]);
 	}
-	printf("mode_of_operation = %d\n",mode_of_operation);
+	printf("DEBUG: mode_of_operation = %d\n",mode_of_operation);
+
+	// Time to validate the values and determine what's going on now 
+	/* this is a bit complicated but work with me here
+	recval_locs[0] corresponds to -s <auth> location in argv
+	recval_locs[1] corresponds to -i <ip-addr> location in argv
+	recval_locs[2] corresponds to -p <port> location in argv
+	recval_locs[3] corresponds to -c <card-loc> location in argv
+	recval_locs[4] corresponds to -a <account> location in argv
+	recval_locs[5] corresponds to "mode of operation" location in argv
+	*/
+	char* auth_file_name = (recval_locs[0]==-1 ? "bank.auth" : argv[recval_locs[0]+1]);
+	char* ip_address = (recval_locs[1]==-1 ? "127.0.0.1" : argv[recval_locs[1]+1]);
+	int port_num = (recval_locs[2]==-1 ? 3000 : atoi(argv[recval_locs[2]+1]));
+	if(recval_locs[4]==-1){
+		printf("DEBUG: No account name given to atm.\n");
+		exit(255);
+	}
+	char* account = argv[recval_locs[4]+1];
+	char* card_file_name = (recval_locs[3]==-1 ? "<account>.card" : argv[recval_locs[3]+1]);
+	if(recval_locs[5]==-1){
+		printf("DEBUG: No mode of operation given to atm.\n");
+		exit(255);
+	}
+	char* operation_value = (mode_of_operation==3 ? "0.00" : (argv[recval_locs[5]+1]));
+	
+
+	printf("DEBUG: Auth file name is %s\n",auth_file_name);
+	printf("DEBUG: IP address is %s\n",ip_address);
+	printf("DEBUG: Port number is %d\n",port_num);
+	printf("DEBUG: Account name is %s\n",account);
+	printf("DEBUG: Card file name is %s\n",card_file_name);
+	if(mode_of_operation!=3){
+		printf("DEBUG: Mode of operation corresponds to %d and value is %s\n",mode_of_operation,operation_value);
+	}else{
+		printf("DEBUG: Mode of operation is -g\n");
+	}
 
 	exit(255);
 

@@ -1,1 +1,3 @@
 6:30pm 12/2 Clark- Added basic functionality to understand and validate command line arguments in bank-main.c.
+9:44pm 12/2 Clark- Added basic functionality to parse but not validate command line arguments in atm-main.c.
+10:22pm 12/2 Clark- Increased the functionality to parse command line arguments in atm-main.c. 
