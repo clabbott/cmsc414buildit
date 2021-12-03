@@ -15,7 +15,7 @@ int main(int argc, char** argv){
 	// Checks to make sure the parameters are valid 
 	if(argc!=1 && argc!=3 && argc!=5){
 		printf("DEBUG: wrong number of arguments: expected val in {1,3,5} but recieved %d\n",argc);
-		return 255;
+		exit(255);
 	}else{
 		if(argc==1){
 			// no validation necessary
@@ -23,14 +23,14 @@ int main(int argc, char** argv){
 			// validation of argv[1] and argv[2] necessary
 			if(strcmp(argv[1],"-p")!=0 && strcmp(argv[1],"-s")!=0){
 				printf("DEBUG: second argument was an unexpected value: %s\n",argv[1]);
-				return 255;
+				exit(255);
 			}
 			if(strcmp(argv[1],"-p")==0){
 				// port argument recognized
 				int port_num = atoi(argv[2]);
 				if(port_num<1024||port_num>65535){
 					printf("DEBUG: port argument was an unexpected value: %s\n",argv[2]);
-					return 255;
+					exit(255);
 				}
 				port = (unsigned short)port_num;
 			}else{
@@ -41,11 +41,11 @@ int main(int argc, char** argv){
 			// validation of argv[1-4] necessary
 			if(strcmp(argv[1],"-p")!=0 && strcmp(argv[1],"-s")!=0){
 				printf("DEBUG: second argument was an unexpected value: %s\n",argv[1]);
-				return 255;
+				exit(255);
 			}
 			if(strcmp(argv[3],"-p")!=0 && strcmp(argv[3],"-s")!=0){
 				printf("DEBUG: fourth argument was an unexpected value: %s\n",argv[3]);
-				return 255;
+				exit(255);
 			}
 
 			// validate argv[1] and argv[2]
@@ -56,7 +56,7 @@ int main(int argc, char** argv){
 				int port_num = atoi(argv[2]);
 				if(port_num<1024||port_num>65535){
 					printf("DEBUG: port argument was an unexpected value: %s\n",argv[2]);
-					return 255;
+					exit(255);
 				}
 				port = (unsigned short)port_num;
 			}else{
@@ -67,19 +67,19 @@ int main(int argc, char** argv){
 				// port argument recognized
 				if(first_was_port==1){
 					printf("DEBUG: argv[3] was interpreted as a second port argument: %s\n",argv[3]);
-					return 255;
+					exit(255);
 				}
 				int port_num = atoi(argv[4]);
 				if(port_num<1024||port_num>65535){
 					printf("DEBUG: port argument was an unexpected value: %s\n",argv[4]);
-					return 255;
+					exit(255);
 				}
 				port = (unsigned short)port_num;
 			}else{
 				// specific auth file detected
 				if(first_was_port==0){
 					printf("DEBUG: argv[3] was interpreted as a second auth argument: %s\n",argv[3]);
-					return 255;
+					exit(255);
 				}
 				auth_pos = 4;}}
 	}
