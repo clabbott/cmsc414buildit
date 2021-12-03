@@ -32,54 +32,72 @@ int main(int argc, char** argv){
 	int mode_of_operation = -1;
 	while(i<argc){
 		if(strcmp(argv[i],"-s")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[0]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				recval_locs[0] = i;
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-i")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[1]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				recval_locs[1] = i;
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-p")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[2]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				recval_locs[2] = i;
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-c")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[3]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				recval_locs[3] = i;
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-a")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[4]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				recval_locs[4] = i;
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-n")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(mode_of_operation!=-1){
 				printf("DEBUG: Duplicate mode of operation argument with a mode of %s detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				mode_of_operation = 0;
@@ -87,9 +105,12 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-d")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(mode_of_operation!=-1){
 				printf("DEBUG: Duplicate mode of operation argument with a mode of %s detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				mode_of_operation = 1;
@@ -97,9 +118,12 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-w")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(mode_of_operation!=-1){
 				printf("DEBUG: Duplicate mode of operation argument with a mode of %s detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				mode_of_operation = 2;
@@ -107,7 +131,7 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-g")==0){
-			printf("DEBUG: %s argument detected at %d\n",argv[i],i);
+			// printf("DEBUG: %s argument detected at %d\n",argv[i],i);
 			if(mode_of_operation!=-1){
 				printf("DEBUG: Duplicate mode of operation argument with a mode of %s detected at %d\n",argv[i],i);
 				exit(255);
@@ -125,7 +149,7 @@ int main(int argc, char** argv){
 	for(int i=0;i<6;i++){
 		printf("recval_locs[%d] value is %d\n",i,recval_locs[i]);
 	}
-	for(int i=0;)
+	printf("mode_of_operation = %d\n",mode_of_operation);
 
 	exit(255);
 
