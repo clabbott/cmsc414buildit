@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <regex.h>
 
 // Default port and ip address are defined here
 
 int main(int argc, char** argv){
   	unsigned short port = 3000;
 	char *ipAddr = "127.0.0.1";
+	FILE *file;
 	
 
 	// welcome to parsing hell
@@ -184,6 +186,24 @@ int main(int argc, char** argv){
 		printf("DEBUG: Mode of operation corresponds to %d and value is %s\n",mode_of_operation,operation_value);
 	}else{
 		printf("DEBUG: Mode of operation is -g\n");
+	}
+
+	// Now validate the values
+	// Auth file name valid? 
+	regex_t re;
+	int response = -1;
+	regcomp(&re,"[a-z]*",0);
+	response = regexec(&re,auth_file_name,0,NULL,0);
+	regfree(&re);
+	if(response!=0||strcmp("..",auth_file_name)==0||strcmp(".",auth_file_name)==0){
+		printf("DEBUG: Auth file %s does not fit the proper file name format.\n",auth_file_name);
+		exit(255);
+	}
+	
+
+	if(!(file = fopen(auth_file_name,"r"))){
+		printf("DEBUG: Auth file does not exist. Exiting with error.\n");
+		exit(255);
 	}
 
 	exit(255);
