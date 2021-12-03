@@ -191,30 +191,65 @@ int main(int argc, char** argv){
 	// Now validate the values
 	// Auth file name valid? 
 	regex_t re;
-	int response = -1;
-	regcomp(&re,"[a-z]*",0);
-	response = regexec(&re,auth_file_name,0,NULL,0);
-	regfree(&re);
+	int response = 0;
+	// regcomp(&re,"[_\\-\\.0123456789a-z]+",0);
+	// response = regexec(&re,auth_file_name,0,NULL,0);
+	// regfree(&re);
 	if(response!=0||strcmp("..",auth_file_name)==0||strcmp(".",auth_file_name)==0){
-		printf("DEBUG: Auth file %s does not fit the proper file name format.\n",auth_file_name);
+		printf("DEBUG: Auth file does not fit the proper file name format.\n");
 		exit(255);
 	}
-	
 
 	if(!(file = fopen(auth_file_name,"r"))){
 		printf("DEBUG: Auth file does not exist. Exiting with error.\n");
 		exit(255);
 	}
 
-	exit(255);
+	// Mode of operation to char 
+	char mode_char[3];
+	if(mode_of_operation==0){
+		strcpy(mode_char,"n");
+	}else if (mode_of_operation==1){
+		strcpy(mode_char,"d");
+	}else if(mode_of_operation==2){
+		strcpy(mode_char,"w");
+	}else if(mode_of_operation==3){
+		strcpy(mode_char,"g");
+	}else{
+		printf("DEBUG: Mode of operation doesn't match accepted values. This code should never be reached.\n");
+		exit(255);
+	}
 
 
+	ATM *atm = atm_create(ip_address, port_num);
 
-	ATM *atm = atm_create(ipAddr, port);
+	/* get authenticated */
+	// get card file set up 
+	unsigned char card_file_buffer[32] = "Card file haha";
+	// get auth file set up 
+	unsigned char auth_file_buffer[32] = "Auth file haha";
+	// TODO 
 
 	/* send messages */
 
-	char buffer[] = "Hello I am the atm and I would like to have money please";
+	/* Buffer message format, separated by Z's:
+		0 account name (122 characters)
+		1 card file value (32 characters)
+		2 mode of operation (1 character)
+		3 value of operation (14 characters)
+		4 anti-repeat attack value (32 characters)
+	*/
+	char buffer[300] = "";
+	strcat(buffer,account);
+	strcat(buffer," ");
+	strcat(buffer,card_file_buffer);
+	strcat(buffer," ");
+	strcat(buffer,mode_char);
+	strcat(buffer," ");
+	strcat(buffer,operation_value);
+	strcat(buffer," ");
+	strcat(buffer,"123");
+
 	atm_send(atm, buffer, sizeof(buffer));
 	atm_recv(atm, buffer, sizeof(buffer));
 	printf("atm received %s\n", buffer);
