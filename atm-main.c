@@ -19,20 +19,52 @@ int main(int argc, char** argv){
 	recval_locs[2] corresponds to -p <port> location in argv
 	recval_locs[3] corresponds to -c <card-loc> location in argv
 	recval_locs[4] corresponds to -a <account> location in argv
-	recval_locs[5] corresponds to "active-operation" location in argv
+	recval_locs[5] corresponds to "mode of operation" location in argv
 	*/
-	int recval_locs[] = [-1,-1,-1,-1,-1,-1];
+	int recval_locs[] = {-1,-1,-1,-1,-1,-1};
 	/*
-	this is the type of active operation that we are dealing with here
+	this is the mode of operation that we are dealing with here
 	0 corresponds to a -n <balance> operation
 	1 corresponds to a -d <amt> operation
 	2 corresponds to a -w <amt> operation
 	3 corresponds to a -g operation
 	*/
-	int active_operation = -1;
+	int mode_of_operation = -1;
 	while(i<argc){
-		
+		if(strcmp(argv[i],"-s")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			i+=2;
+		}else if(strcmp(argv[i],"-i")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			i+=2;
+		}else if(strcmp(argv[i],"-p")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			i+=2;
+		}else if(strcmp(argv[i],"-c")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			i+=2;
+		}else if(strcmp(argv[i],"-a")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			i+=2;
+		}else if(strcmp(argv[i],"-n")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			i+=2;
+		}else if(strcmp(argv[i],"-d")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			i+=2;
+		}else if(strcmp(argv[i],"-w")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			i+=2;
+		}else if(strcmp(argv[i],"-g")==0){
+			printf("DEBUG: %s argument detected at %d\n",argv[i],i);
+			i+=1;
+		}else{
+			printf("DEBUG: Argument at %d was invalid. Value is %s\n",i,argv[i]);
+			exit(255);
+		}
 	}
+
+	exit(255);
 
 
 
