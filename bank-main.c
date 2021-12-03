@@ -14,7 +14,7 @@ int main(int argc, char** argv){
 
 	// Checks to make sure the parameters are valid 
 	if(argc!=1 && argc!=3 && argc!=5){
-		printf("DEBUG: wrong number of arguments: expected val in {1,3,5} but recieved %d\n",argc);
+		// printf("DEBUG: wrong number of arguments: expected val in {1,3,5} but recieved %d\n",argc);
 		return 255;
 	}else{
 		if(argc==1){
@@ -22,14 +22,14 @@ int main(int argc, char** argv){
 		}else if(argc==3){
 			// validation of argv[1] and argv[2] necessary
 			if(strcmp(argv[1],"-p")!=0 && strcmp(argv[1],"-s")!=0){
-				printf("DEBUG: second argument was an unexpected value: %s\n",argv[1]);
+				// printf("DEBUG: second argument was an unexpected value: %s\n",argv[1]);
 				return 255;
 			}
 			if(strcmp(argv[1],"-p")==0){
 				// port argument recognized
 				int port_num = atoi(argv[2]);
 				if(port_num<1024||port_num>65535){
-					printf("DEBUG: port argument was an unexpected value: %s\n",argv[2]);
+					// printf("DEBUG: port argument was an unexpected value: %s\n",argv[2]);
 					return 255;
 				}
 				port = (unsigned short)port_num;
@@ -37,9 +37,9 @@ int main(int argc, char** argv){
 				// specific auth file detected
 				if((file = fopen(argv[2],"r"))){
 					fclose(file);
-					printf("DEBUG: auth file was able to open: %s\n",argv[2]);
+					// printf("DEBUG: auth file was able to open: %s\n",argv[2]);
 				}else{
-					printf("DEBUG: auth file was not able to open: %s\n",argv[2]);
+					// printf("DEBUG: auth file was not able to open: %s\n",argv[2]);
 					return 255;
 				}
 				auth_pos = 2;
@@ -47,11 +47,11 @@ int main(int argc, char** argv){
 		}else {
 			// validation of argv[1-4] necessary
 			if(strcmp(argv[1],"-p")!=0 && strcmp(argv[1],"-s")!=0){
-				printf("DEBUG: second argument was an unexpected value: %s\n",argv[1]);
+				// printf("DEBUG: second argument was an unexpected value: %s\n",argv[1]);
 				return 255;
 			}
 			if(strcmp(argv[3],"-p")!=0 && strcmp(argv[3],"-s")!=0){
-				printf("DEBUG: fourth argument was an unexpected value: %s\n",argv[3]);
+				// printf("DEBUG: fourth argument was an unexpected value: %s\n",argv[3]);
 				return 255;
 			}
 
@@ -62,7 +62,7 @@ int main(int argc, char** argv){
 				first_was_port = 1;
 				int port_num = atoi(argv[2]);
 				if(port_num<1024||port_num>65535){
-					printf("DEBUG: port argument was an unexpected value: %s\n",argv[2]);
+					// printf("DEBUG: port argument was an unexpected value: %s\n",argv[2]);
 					return 255;
 				}
 				port = (unsigned short)port_num;
@@ -70,9 +70,9 @@ int main(int argc, char** argv){
 				// specific auth file detected
 				if((file = fopen(argv[2],"r"))){
 					fclose(file);
-					printf("DEBUG: auth file was able to open: %s\n",argv[2]);
+					// printf("DEBUG: auth file was able to open: %s\n",argv[2]);
 				}else{
-					printf("DEBUG: auth file was not able to open: %s\n",argv[2]);
+					// printf("DEBUG: auth file was not able to open: %s\n",argv[2]);
 					return 255;
 				}
 				auth_pos = 2;}
@@ -80,26 +80,26 @@ int main(int argc, char** argv){
 			if(strcmp(argv[3],"-p")==0){
 				// port argument recognized
 				if(first_was_port==1){
-					printf("DEBUG: argv[3] was interpreted as a second port argument: %s\n",argv[3]);
+					// printf("DEBUG: argv[3] was interpreted as a second port argument: %s\n",argv[3]);
 					return 255;
 				}
 				int port_num = atoi(argv[4]);
 				if(port_num<1024||port_num>65535){
-					printf("DEBUG: port argument was an unexpected value: %s\n",argv[4]);
+					// printf("DEBUG: port argument was an unexpected value: %s\n",argv[4]);
 					return 255;
 				}
 				port = (unsigned short)port_num;
 			}else{
 				// specific auth file detected
 				if(first_was_port==0){
-					printf("DEBUG: argv[3] was interpreted as a second auth argument: %s\n",argv[3]);
+					// printf("DEBUG: argv[3] was interpreted as a second auth argument: %s\n",argv[3]);
 					return 255;
 				}
 				if((file = fopen(argv[4],"r"))){
 					fclose(file);
-					printf("DEBUG: auth file was able to open: %s\n",argv[4]);
+					// printf("DEBUG: auth file was able to open: %s\n",argv[4]);
 				}else{
-					printf("DEBUG: auth file was not able to open: %s\n",argv[4]);
+					// printf("DEBUG: auth file was not able to open: %s\n",argv[4]);
 					return 255;
 				}
 				auth_pos = 4;}}
