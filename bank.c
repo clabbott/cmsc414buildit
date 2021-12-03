@@ -12,14 +12,14 @@ Bank* bank_create(char *auth_file, char *ip, unsigned short port)
 	// if not auth_file exists, create auth_file
 	//bank->auth_file = auth_file
 	FILE *file;
-	if((file = fopen(fname,"r"))){
+	if((file = fopen(auth_file,"r"))){
 		fclose(file);
 		printf("DEBUG: auth file already exists. Exiting with error.\n");
-		return 255;
+		exit(255);
 	}else{
-		if((file = fopen(fname,"w"))){
+		if((file = fopen(auth_file,"w"))){
 			printf("DEBUG: writing super secret code to new auth file.\n");
-			super_secret_code[] = "123";
+			char super_secret_code[] = "123";
 			fwrite(super_secret_code,1,sizeof(super_secret_code),file);
 			fclose(file);
 		}
