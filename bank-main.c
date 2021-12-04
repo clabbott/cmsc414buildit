@@ -5,6 +5,62 @@
 
 // Default port and ip address are defined here
 
+struct linked_list_node {
+	char *account_balance;
+	char *account; // key
+	char *card_info;
+	struct linked_list_node *next;
+};
+
+struct linked_list_node *head = NULL;
+struct linked_list_node *curr = NULL;
+
+void insert(char *account,char *account_balance,char *card_info){
+	struct linked_list_node *new_node = (struct linked_list_node*)malloc(sizeof(struct linked_list_node));
+	
+	new_node->account = malloc(strlen(account)+1);
+	// memset(new_node->account,'\0',123);
+	strcpy(new_node->account,account);
+
+	new_node->account_balance = malloc(strlen(account_balance)+1);
+	// memset(new_node->account_balance,'\0',15);
+	strcpy(new_node->account_balance,account_balance);
+
+	new_node->card_info = malloc(strlen(card_info)+1);
+	// memset(new_node->card_info,'\0',33);
+	strcpy(new_node->card_info,card_info);
+
+	new_node->next = head;
+	head = new_node;
+}
+
+void printLinkedList(){
+	struct linked_list_node *curr = head;
+	printf("\n[ ");
+
+	while(curr != NULL){
+		printf("(account:%s,\n  account_balance:%s,\n  card_info:%s)\n",curr->account,curr->account_balance,curr->card_info);
+		curr = curr->next;
+	}
+
+	printf(" ]\n");
+}
+
+void linked_list_node* find_account(char  *account){
+	struct linked_list_node* curr = head;
+	if(head==NULL){
+		return NULL;
+	}
+	while(strcmp(curr->account,account)!=0){
+		if(curr->next == NULL){
+			return NULL;
+		}else{
+			curr = curr->next;
+		}
+	}
+	return curr;
+}
+
 int main(int argc, char** argv){
 	unsigned short port = 3000;
 	char *ip = "127.0.0.1";
@@ -136,7 +192,17 @@ int main(int argc, char** argv){
 		memset(sent_value_of_operation,'\0',sizeof(sent_value_of_operation));
 		strncpy(sent_value_of_operation,&(buffer[122+32+2]),13);
 		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
-		printf("DEBUG: Remaining string is %s.\n",&(buffer[122+32+1+13]));
+		printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
+
+		// do some validation ?
+		// TODO validation
+
+		// if data validates: 
+		insert(sent_account,sent_value_of_operation,sent_card_value);
+		printLinkedList();
+
+
+
 
 
 		// printf("bank received:  %s\n", buffer);
