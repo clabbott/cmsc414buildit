@@ -249,11 +249,18 @@ int main(int argc, char** argv){
 				// check if card is valid
 				int valid = 1;
 				for(int i=0;i<32;i++){
-					
+					if(found->card_info[i]!=sent_card_value[i]){
+						valid = 0;
+					}
 				}
-				printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-				strcpy(ret_buffer, "But something happened!");
-				printLinkedList();
+				if(valid == 1){
+					printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+					strcpy(ret_buffer, "But something happened!");
+					printLinkedList();
+				}else{
+					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
+					strcpy(ret_buffer, "But nothing happened.");
+				}
 			}
 		}else if('w'==sent_mode_of_operation[0]){
 			printf("DEBUG: The atm wants to widthdraw.\n");
@@ -262,9 +269,21 @@ int main(int argc, char** argv){
 				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
 				strcpy(ret_buffer, "But nothing happened.");
 			}else{
-				printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-				strcpy(ret_buffer, "But something happened!");
-				printLinkedList();
+				// check if card is valid
+				int valid = 1;
+				for(int i=0;i<32;i++){
+					if(found->card_info[i]!=sent_card_value[i]){
+						valid = 0;
+					}
+				}
+				if(valid == 1){
+					printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+					strcpy(ret_buffer, "But something happened!");
+					printLinkedList();
+				}else{
+					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
+					strcpy(ret_buffer, "But nothing happened.");
+				}
 			}
 		}else if('g'==sent_mode_of_operation[0]){
 			printf("DEBUG: The atm wants to check the balance of an account.\n");
@@ -273,9 +292,21 @@ int main(int argc, char** argv){
 				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
 				strcpy(ret_buffer, "But nothing happened.");
 			}else{
-				printf("DEBUG: Returning found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-				strcpy(ret_buffer, "But something happened!");
-				printLinkedList();
+				// check if card is valid
+				int valid = 1;
+				for(int i=0;i<32;i++){
+					if(found->card_info[i]!=sent_card_value[i]){
+						valid = 0;
+					}
+				}
+				if(valid == 1){
+					printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+					strcpy(ret_buffer, "But something happened!");
+					printLinkedList();
+				}else{
+					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
+					strcpy(ret_buffer, "But nothing happened.");
+				}
 			}
 		}else{
 			printf("DEBUG: The atm sent an invalid mode of operation: '%c'.\n",sent_mode_of_operation[0]);

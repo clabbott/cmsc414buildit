@@ -6,6 +6,26 @@
 
 // Default port and ip address are defined here
 
+int sym_encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key, unsigned char *iv, unsigned char *ciphertext){
+	EVP_CIPHER_CTX *ctx;
+	int len;
+	int ciphertext_len;
+
+	// creat and init context
+	if(!(ctx = EVP_CIPHER_CTX_new())){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 16\n");
+		exit(255);
+	}
+
+	// init encryption operation 
+	if(1!= EVP_EncryptInit_ex(ctx,EVP_aes_256_cbc(),NULL,key,iv)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 22\n");
+		exit(255);
+	}
+
+
+}
+
 int main(int argc, char** argv){
   	unsigned short port = 3000;
 	char *ipAddr = "127.0.0.1";
@@ -250,6 +270,7 @@ int main(int argc, char** argv){
 		if((card_file = fopen(card_file_name,"r"))){
 			fclose(card_file);
 			printf("DEBUG: Card file already exists. Exiting with error.\n");
+			// TODO this breaks it for some reason
 			exit(255);
 		}else{
 			if((card_file = fopen(card_file_name,"w"))){
@@ -268,6 +289,7 @@ int main(int argc, char** argv){
 		}else{
 			printf("DEBUG: Card file does not exist. Exiting with error.\n");
 			exit(255);
+			// TODO this breaks bank for some reason
 		}
 	}
 
@@ -315,10 +337,18 @@ int main(int argc, char** argv){
 	}
 
 	// encrypt here 
+	unsigned char *ciphertext = malloc(300*sizeof(char*)+16);
+	unsigned char iv[16];
+	RAND_bytes(iv,16);
+	size_t iv_len = 16;
 
-	
+	int ciphertext_len = sym_encrypt(buffer, strlen((char*)buffer),auth_file_buffer,iv,ciphertext);
 
-	atm_send(atm, buffer, sizeof(buffer));
+	for(int i=ciphertext_len;i<ciphetext_len+16;i++){
+		ciphertext[i] = iv[i-ciphertext_len];
+	}
+
+	atm_send(atm, ciphertext, ciphertext_len+16);
 	atm_recv(atm, buffer, sizeof(buffer));
 
 

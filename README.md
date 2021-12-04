@@ -9,3 +9,5 @@ Password guessing attack
 Integer overflow 
 :D
 OwO
+
+Known bug: on "card file already exists" or "card file does not exist", bank crashes. 
