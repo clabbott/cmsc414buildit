@@ -263,8 +263,16 @@ int main(int argc, char** argv){
 	// strcat(buffer," ");
 	strcat(buffer,"123");
 
+
+	// encrypt here 
+
 	atm_send(atm, buffer, sizeof(buffer));
 	atm_recv(atm, buffer, sizeof(buffer));
+
+
+	// decrypt here 
+
+	
 	printf("atm received %s\n", buffer);
 	
 	atm_free(atm);

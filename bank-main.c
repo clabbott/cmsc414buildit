@@ -46,7 +46,7 @@ void printLinkedList(){
 	printf(" ]\n");
 }
 
-void linked_list_node* find_account(char  *account){
+struct linked_list_node* find_account(char  *account){
 	struct linked_list_node* curr = head;
 	if(head==NULL){
 		return NULL;
@@ -165,7 +165,12 @@ int main(int argc, char** argv){
 
 		/* okay, connected to bank/atm. Send/recv messages to/from the bank/atm. */
 		char buffer[1024];
+		char ret_buffer[1024];
 		bank_recv(b, buffer, sizeof(buffer));
+
+		// decrypt here
+
+
 		/* Buffer message format:
 		0 account name (122 characters)
 		1 card file value (32 characters)
@@ -198,16 +203,61 @@ int main(int argc, char** argv){
 		// TODO validation
 
 		// if data validates: 
-		insert(sent_account,sent_value_of_operation,sent_card_value);
-		printLinkedList();
 
+		// TODO: Check if the card for the user validates 
+		// TODO: Implement a system to check 
+		if('n'==sent_mode_of_operation[1]){
+			printf("DEBUG: The atm wants to make a new account.\n");
+			if(find_account(sent_account)!=NULL){
+				printf("DEBUG: That account for '%s' already exists!\n",sent_account);
+				strcpy(ret_buffer, "But nothing happened.");
+			}else{
+				insert(sent_account,sent_value_of_operation,sent_card_value);
+				strcpy(ret_buffer, "But something happened!");
+				printLinkedList();
+			}
+		}else if('d'==sent_mode_of_operation[1]){
+			printf("DEBUG: The atm wants to deposit.\n");
+			struct linked_list_node *found = find_account(sent_account);
+			if(found==NULL){
+				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+				strcpy(ret_buffer, "But nothing happened.");
+			}else{
+				printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+				strcpy(ret_buffer, "But something happened!");
+				printLinkedList();
+			}
+		}else if('w'==sent_mode_of_operation[1]){
+			printf("DEBUG: The atm wants to widthdraw.\n");
+			struct linked_list_node *found = find_account(sent_account);
+			if(found==NULL){
+				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+				strcpy(ret_buffer, "But nothing happened.");
+			}else{
+				printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+				strcpy(ret_buffer, "But something happened!");
+				printLinkedList();
+			}
+		}else if('g'==sent_mode_of_operation[1]){
+			printf("DEBUG: The atm wants to check the balance of an account.\n");
+			struct linked_list_node *found = find_account(sent_account);
+			if(found==NULL){
+				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+				strcpy(ret_buffer, "But nothing happened.");
+			}else{
+				printf("DEBUG: Returning found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+				strcpy(ret_buffer, "But something happened!");
+				printLinkedList();
+			}
+		}else{
+			printf("DEBUG: The atm sent an invalid mode of operation: '%c'.\n",sent_mode_of_operation[1]);
+			strcpy(ret_buffer, "But nothing happened.");
+		}
 
+		// encrypt here
 
-
-
-		// printf("bank received:  %s\n", buffer);
-		strcpy(buffer, "money money money");
-		bank_send(b, buffer, strlen(buffer)+1);
+		
+		bank_send(b, ret_buffer, strlen(ret_buffer)+1);
 
 
 		/* when finished processing commands ...*/
