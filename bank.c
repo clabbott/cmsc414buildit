@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <openssl/rand.h>
 
 Bank* bank_create(char *auth_file, char *ip, unsigned short port)
 {
@@ -19,8 +20,9 @@ Bank* bank_create(char *auth_file, char *ip, unsigned short port)
 	}else{
 		if((file = fopen(auth_file,"w"))){
 			printf("DEBUG: writing super secret code to new auth file.\n");
-			char super_secret_code[] = "123";
-			fwrite(super_secret_code,1,sizeof(super_secret_code),file);
+			unsigned char sym_key[32];
+			RAND_bytes(sym_key,32);
+			fwrite(sym_key,1,sizeof(sym_key),file);
 			fclose(file);
 		}
 	}

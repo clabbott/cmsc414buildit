@@ -8,14 +8,14 @@
 struct linked_list_node {
 	char *account_balance;
 	char *account; // key
-	char *card_info;
+	unsigned char *card_info;
 	struct linked_list_node *next;
 };
 
 struct linked_list_node *head = NULL;
 struct linked_list_node *curr = NULL;
 
-void insert(char *account,char *account_balance,char *card_info){
+void insert(char *account,char *account_balance,unsigned char *card_info){
 	struct linked_list_node *new_node = (struct linked_list_node*)malloc(sizeof(struct linked_list_node));
 	
 	new_node->account = malloc(strlen(account)+1);
@@ -178,26 +178,49 @@ int main(int argc, char** argv){
 		3 value of operation (13 characters)
 		4 anti-repeat attack value (32 characters)
 		*/
+		int buffer_idx = 0;
 		char sent_account[123];
-		memset(sent_account,'\0',sizeof(sent_account));
-		strncpy(sent_account,buffer,122);
+		// memset(sent_account,'\0',sizeof(sent_account));
+		// strncpy(sent_account,buffer,122);
+		for(int i=0;i<122;i++){
+			sent_account[i] = buffer[buffer_idx++];
+		}
+		sent_account[122] = '\0';
 		printf("DEBUG: ATM sent an account with account name of %s.\n",sent_account);
 		// printf("DEBUG: Remaining string is %s.\n",&(buffer[122]));
-		char sent_card_value[33];
-		memset(sent_card_value,'\0',sizeof(sent_card_value));
-		strncpy(sent_card_value,&(buffer[122]),32);
-		printf("DEBUG: ATM sent a card value of %s.\n",sent_card_value);
+
+		unsigned char sent_card_value[33];
+		// memset(sent_card_value,'\0',sizeof(sent_card_value));
+		// strncpy(sent_card_value,&(buffer[122]),32);
+		printf("DEBUG: ATM sent a card value of: '");
+		for(int i=0;i<32;i++){
+			sent_card_value[i] = buffer[buffer_idx++];
+			printf("%d",sent_card_value[i]);
+		}
+		sent_card_value[32] = '\0';
+		printf("'.\n");
+		// printf("DEBUG: ATM sent a card value of %s.\n",sent_card_value);
 		// printf("DEBUG: Remaining string is %s.\n",&(buffer[122+32]));
-		char sent_mode_of_operation[3];
-		memset(sent_mode_of_operation,'\0',sizeof(sent_mode_of_operation));
-		strncpy(sent_mode_of_operation,&(buffer[122+32]),2);
+
+		char sent_mode_of_operation[2];
+		// memset(sent_mode_of_operation,'\0',sizeof(sent_mode_of_operation));
+		// strncpy(sent_mode_of_operation,&(buffer[122+32]),2);
+		for(int i=0;i<1;i++){
+			sent_mode_of_operation[i] = buffer[buffer_idx++];
+		}
+		sent_mode_of_operation[2] = '\0';
 		printf("DEBUG: ATM sent a mode of operation of %s.\n",sent_mode_of_operation);
 		// printf("DEBUG: Remaining string is %s.\n",&(buffer[122+32+2]));
+
 		char sent_value_of_operation[15];
-		memset(sent_value_of_operation,'\0',sizeof(sent_value_of_operation));
-		strncpy(sent_value_of_operation,&(buffer[122+32+2]),13);
+		// memset(sent_value_of_operation,'\0',sizeof(sent_value_of_operation));
+		// strncpy(sent_value_of_operation,&(buffer[122+32+2]),13);
+		for(int i=0;i<13;i++){
+			sent_value_of_operation[i] = buffer[buffer_idx++];
+		}
+		sent_value_of_operation[13] = '\0';
 		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
-		printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
+		// printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
 
 		// do some validation ?
 		// TODO validation
@@ -206,7 +229,7 @@ int main(int argc, char** argv){
 
 		// TODO: Check if the card for the user validates 
 		// TODO: Implement a system to check 
-		if('n'==sent_mode_of_operation[1]){
+		if('n'==sent_mode_of_operation[0]){
 			printf("DEBUG: The atm wants to make a new account.\n");
 			if(find_account(sent_account)!=NULL){
 				printf("DEBUG: That account for '%s' already exists!\n",sent_account);
@@ -216,18 +239,23 @@ int main(int argc, char** argv){
 				strcpy(ret_buffer, "But something happened!");
 				printLinkedList();
 			}
-		}else if('d'==sent_mode_of_operation[1]){
+		}else if('d'==sent_mode_of_operation[0]){
 			printf("DEBUG: The atm wants to deposit.\n");
 			struct linked_list_node *found = find_account(sent_account);
 			if(found==NULL){
 				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
 				strcpy(ret_buffer, "But nothing happened.");
 			}else{
+				// check if card is valid
+				int valid = 1;
+				for(int i=0;i<32;i++){
+					
+				}
 				printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
 				strcpy(ret_buffer, "But something happened!");
 				printLinkedList();
 			}
-		}else if('w'==sent_mode_of_operation[1]){
+		}else if('w'==sent_mode_of_operation[0]){
 			printf("DEBUG: The atm wants to widthdraw.\n");
 			struct linked_list_node *found = find_account(sent_account);
 			if(found==NULL){
@@ -238,7 +266,7 @@ int main(int argc, char** argv){
 				strcpy(ret_buffer, "But something happened!");
 				printLinkedList();
 			}
-		}else if('g'==sent_mode_of_operation[1]){
+		}else if('g'==sent_mode_of_operation[0]){
 			printf("DEBUG: The atm wants to check the balance of an account.\n");
 			struct linked_list_node *found = find_account(sent_account);
 			if(found==NULL){
@@ -250,7 +278,7 @@ int main(int argc, char** argv){
 				printLinkedList();
 			}
 		}else{
-			printf("DEBUG: The atm sent an invalid mode of operation: '%c'.\n",sent_mode_of_operation[1]);
+			printf("DEBUG: The atm sent an invalid mode of operation: '%c'.\n",sent_mode_of_operation[0]);
 			strcpy(ret_buffer, "But nothing happened.");
 		}
 

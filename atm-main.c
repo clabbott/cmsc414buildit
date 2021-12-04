@@ -172,10 +172,15 @@ int main(int argc, char** argv){
 	memset(account,'\0',sizeof(account));
 	strncpy(account,argv[recval_locs[4]+1],122);
 	printf("DEBUG: account name is %d characters long, need to pad %d characters of space to the end.\n",strlen(account),122-strlen(account));
+	char natural_card_buff[128]; // holds the value of the natural card associated with this account if needed later
+	strcpy(natural_card_buff,account);
+	strcat(natural_card_buff,".card");
 	for(int i=strlen(account);i<122;i++){
 		strcat(account," ");
 	}
-	char* card_file_name = (recval_locs[3]==-1 ? "<account>.card" : argv[recval_locs[3]+1]);
+	
+
+	char* card_file_name = (recval_locs[3]==-1 ? natural_card_buff : argv[recval_locs[3]+1]);
 	if(recval_locs[5]==-1){
 		printf("DEBUG: No mode of operation given to atm.\n");
 		exit(255);
@@ -237,9 +242,46 @@ int main(int argc, char** argv){
 
 	/* get authenticated */
 	// get card file set up 
-	unsigned char card_file_buffer[32] = "card5678911234567892123456789312";
+	// unsigned char card_file_buffer[32] = "card5678911234567892123456789312";
+	unsigned char card_file_buffer[32];
+	FILE *card_file;
+	if(mode_of_operation==0){
+		// if making new, write a random 32 bytes to a file 
+		if((card_file = fopen(card_file_name,"r"))){
+			fclose(card_file);
+			printf("DEBUG: Card file already exists. Exiting with error.\n");
+			exit(255);
+		}else{
+			if((card_file = fopen(card_file_name,"w"))){
+				printf("DEBUG: Writing random bytes to card file.\n");
+				RAND_bytes(card_file_buffer,32);
+				fwrite(card_file_buffer,1,sizeof(card_file_buffer),card_file);
+				fclose(card_file);			
+			}
+		}		
+	}else{
+		// if using existing, read from that file specified
+		if((card_file = fopen(card_file_name,"r"))){
+			printf("DEBUG: Reading from existing card file at %s.\n",card_file_name);
+			fread(card_file_buffer, sizeof(card_file_buffer),1,card_file);
+			fclose(card_file);
+		}else{
+			printf("DEBUG: Card file does not exist. Exiting with error.\n");
+			exit(255);
+		}
+	}
+
 	// get auth file set up 
-	unsigned char auth_file_buffer[32] = "auth5678911234567892123456789312";
+	unsigned char auth_file_buffer[32];
+	FILE *auth_file;
+	if((auth_file = fopen(auth_file_name,"r"))){
+		printf("DEBUG: Reading from auth file at %s.\n",auth_file_name);
+		fread(auth_file_buffer, sizeof(auth_file_buffer),1,auth_file);
+		fclose(auth_file);
+	}else{
+		printf("DEBUG: Auth file does not exist. Exiting with error.\n");
+		exit(255);
+	}
 	// TODO 
 
 	/* send messages */
@@ -252,19 +294,29 @@ int main(int argc, char** argv){
 		4 anti-repeat attack value (32 characters)
 	*/
 	char buffer[300] = "";
-	strcat(buffer,account);
-	// strcat(buffer," ");
-	strcat(buffer,card_file_buffer);
-	// strcat(buffer," ");
-	strcat(buffer,mode_char);
-	// strcat(buffer," ");
+	int buffer_idx = 0;
+	// strcat(buffer,account); // always 122 characters
+	for(int i=0;i<122;i++){
+		buffer[buffer_idx++] = account[i];
+	}
+	// strcat(buffer,card_file_buffer); // always 32 wacky characters
+	for(int i=0;i<32;i++){
+		buffer[buffer_idx++] = card_file_buffer[i];
+	}
+	// strcat(buffer,mode_char);
+	for(int i=0;i<strlen(mode_char);i++){
+		buffer[buffer_idx++] = mode_char[i];
+	}
+
 	printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
 	strcat(buffer,operation_value);
-	// strcat(buffer," ");
-	strcat(buffer,"123");
-
+	for(int i=0;i<strlen(operation_value);i++){
+		buffer[buffer_idx++] = operation_value[i];
+	}
 
 	// encrypt here 
+
+	
 
 	atm_send(atm, buffer, sizeof(buffer));
 	atm_recv(atm, buffer, sizeof(buffer));
@@ -272,7 +324,7 @@ int main(int argc, char** argv){
 
 	// decrypt here 
 
-	
+
 	printf("atm received %s\n", buffer);
 	
 	atm_free(atm);
