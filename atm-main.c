@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h>
+#include <openssl/ssl.h>
+#include <openssl/evp.h>
+#include <openssl/bio.h>
+#include <openssl/conf.h>
+#include <openssl/err.h>
 
 // Default port and ip address are defined here
 
@@ -23,7 +28,23 @@ int sym_encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
 		exit(255);
 	}
 
+	// provide message to be encrypted/ get output
+	if(1!= EVP_EncryptUpdate(ctx,ciphertext,&len,plaintext,plaintext_len)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
+		exit(255);
+	}
+	ciphertext_len = len;
 
+	// finalize the encryption 
+	if(1!=EVP_EncryptFinal_ex(ctx,ciphertext+len,&len)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
+		exit(255);
+	}
+	ciphertext_len += len;
+
+	// clean up and return 
+	EVP_CIPHER_CTX_free(ctx);
+	return ciphertext_len;
 }
 
 int main(int argc, char** argv){
@@ -337,18 +358,20 @@ int main(int argc, char** argv){
 	}
 
 	// encrypt here 
-	unsigned char *ciphertext = malloc(300*sizeof(char*)+16);
-	unsigned char iv[16];
-	RAND_bytes(iv,16);
-	size_t iv_len = 16;
+	// unsigned char *ciphertext = malloc(300*sizeof(char*)+16);
+	// unsigned char iv[16];
+	// RAND_bytes(iv,16);
+	// size_t iv_len = 16;
 
-	int ciphertext_len = sym_encrypt(buffer, strlen((char*)buffer),auth_file_buffer,iv,ciphertext);
+	// int ciphertext_len = sym_encrypt(buffer, strlen((char*)buffer),auth_file_buffer,iv,ciphertext);
 
-	for(int i=ciphertext_len;i<ciphetext_len+16;i++){
-		ciphertext[i] = iv[i-ciphertext_len];
-	}
+	// for(int i=ciphertext_len;i<ciphertext_len+16;i++){
+	// 	ciphertext[i] = iv[i-ciphertext_len];
+	// }
 
-	atm_send(atm, ciphertext, ciphertext_len+16);
+	// atm_send(atm, ciphertext, ciphertext_len+16);
+
+	atm_send(atm, buffer, sizeof(buffer));
 	atm_recv(atm, buffer, sizeof(buffer));
 
 

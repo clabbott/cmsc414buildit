@@ -170,6 +170,9 @@ int main(int argc, char** argv){
 
 		// decrypt here
 
+		// first 16 bytes are the unsigned char iv
+
+
 
 		/* Buffer message format:
 		0 account name (122 characters)
