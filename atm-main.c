@@ -168,13 +168,25 @@ int main(int argc, char** argv){
 		printf("DEBUG: No account name given to atm.\n");
 		exit(255);
 	}
-	char* account = argv[recval_locs[4]+1];
+	char account[123];
+	memset(account,'\0',sizeof(account));
+	strncpy(account,argv[recval_locs[4]+1],122);
+	printf("DEBUG: account name is %d characters long, need to pad %d characters of space to the end.\n",strlen(account),122-strlen(account));
+	for(int i=strlen(account);i<122;i++){
+		strcat(account," ");
+	}
 	char* card_file_name = (recval_locs[3]==-1 ? "<account>.card" : argv[recval_locs[3]+1]);
 	if(recval_locs[5]==-1){
 		printf("DEBUG: No mode of operation given to atm.\n");
 		exit(255);
 	}
-	char* operation_value = (mode_of_operation==3 ? "0.00" : (argv[recval_locs[5]+1]));
+	char operation_value[14];
+	memset(operation_value,'\0',sizeof(operation_value));
+	strncpy(operation_value,(mode_of_operation==3 ? "0.00" : (argv[recval_locs[5]+1])),13);
+	printf("DEBUG: operation_value is %d characters long, need to pad %d characters of space to the end.\n",strlen(operation_value),13-strlen(operation_value));
+	for(int i=strlen(operation_value);i<13;i++){
+		strcat(operation_value," ");
+	}
 	
 
 	printf("DEBUG: Auth file name is %s\n",auth_file_name);
