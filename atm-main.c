@@ -237,29 +237,30 @@ int main(int argc, char** argv){
 
 	/* get authenticated */
 	// get card file set up 
-	unsigned char card_file_buffer[32] = "Card file haha";
+	unsigned char card_file_buffer[32] = "card5678911234567892123456789312";
 	// get auth file set up 
-	unsigned char auth_file_buffer[32] = "Auth file haha";
+	unsigned char auth_file_buffer[32] = "auth5678911234567892123456789312";
 	// TODO 
 
 	/* send messages */
 
-	/* Buffer message format, separated by Z's:
+	/* Buffer message format:
 		0 account name (122 characters)
 		1 card file value (32 characters)
 		2 mode of operation (1 character)
-		3 value of operation (14 characters)
+		3 value of operation (13 characters)
 		4 anti-repeat attack value (32 characters)
 	*/
 	char buffer[300] = "";
 	strcat(buffer,account);
-	strcat(buffer," ");
+	// strcat(buffer," ");
 	strcat(buffer,card_file_buffer);
-	strcat(buffer," ");
+	// strcat(buffer," ");
 	strcat(buffer,mode_char);
-	strcat(buffer," ");
+	// strcat(buffer," ");
+	printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
 	strcat(buffer,operation_value);
-	strcat(buffer," ");
+	// strcat(buffer," ");
 	strcat(buffer,"123");
 
 	atm_send(atm, buffer, sizeof(buffer));

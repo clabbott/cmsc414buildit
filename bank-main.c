@@ -110,7 +110,36 @@ int main(int argc, char** argv){
 		/* okay, connected to bank/atm. Send/recv messages to/from the bank/atm. */
 		char buffer[1024];
 		bank_recv(b, buffer, sizeof(buffer));
-		printf("bank received:  %s\n", buffer);
+		/* Buffer message format:
+		0 account name (122 characters)
+		1 card file value (32 characters)
+		2 mode of operation (1 character)
+		3 value of operation (13 characters)
+		4 anti-repeat attack value (32 characters)
+		*/
+		char sent_account[123];
+		memset(sent_account,'\0',sizeof(sent_account));
+		strncpy(sent_account,buffer,122);
+		printf("DEBUG: ATM sent an account with account name of %s.\n",sent_account);
+		// printf("DEBUG: Remaining string is %s.\n",&(buffer[122]));
+		char sent_card_value[33];
+		memset(sent_card_value,'\0',sizeof(sent_card_value));
+		strncpy(sent_card_value,&(buffer[122]),32);
+		printf("DEBUG: ATM sent a card value of %s.\n",sent_card_value);
+		// printf("DEBUG: Remaining string is %s.\n",&(buffer[122+32]));
+		char sent_mode_of_operation[3];
+		memset(sent_mode_of_operation,'\0',sizeof(sent_mode_of_operation));
+		strncpy(sent_mode_of_operation,&(buffer[122+32]),2);
+		printf("DEBUG: ATM sent a mode of operation of %s.\n",sent_mode_of_operation);
+		// printf("DEBUG: Remaining string is %s.\n",&(buffer[122+32+2]));
+		char sent_value_of_operation[15];
+		memset(sent_value_of_operation,'\0',sizeof(sent_value_of_operation));
+		strncpy(sent_value_of_operation,&(buffer[122+32+2]),13);
+		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
+		printf("DEBUG: Remaining string is %s.\n",&(buffer[122+32+1+13]));
+
+
+		// printf("bank received:  %s\n", buffer);
 		strcpy(buffer, "money money money");
 		bank_send(b, buffer, strlen(buffer)+1);
 
