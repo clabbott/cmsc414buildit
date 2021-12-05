@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <openssl/ssl.h>
+#include <openssl/evp.h>
+#include <openssl/bio.h>
+#include <openssl/conf.h>
+#include <openssl/err.h>
 
 // Default port and ip address are defined here
 
@@ -10,12 +15,28 @@ int sym_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *ke
 	int len;
 	int plaintext_len;
 
+	// create and init context
 	if(!(ctx = EVP_CIPHER_CTX_new())){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 14\n");
+		printf("DEBUG: Wuhwoh things are getting fonky at line 20\n");
 		exit(255);
 	}
 
+	// init decrypt operation
+	if(1!= EVP_DecryptInit_ex(ctx,EVP_aes_256_cbc(),NULL,key,iv)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 26\n");
+		exit(255);
+	}
 
+	// put decrypted message, get output
+	if(1!= EVP_DecryptUpdate(ctx,plaintext,&len,ciphertext,ciphertext_len)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 32\n");
+		exit(255);
+	}
+	plaintext_len = len;
+
+	//Cleanup 
+	EVP_CIPHER_CTX_free(ctx);
+	return plaintext_len;
 }
 
 struct linked_list_node {
@@ -181,11 +202,19 @@ int main(int argc, char** argv){
 		char ret_buffer[1024];
 		bank_recv(b, buffer, sizeof(buffer));
 
+		
 		// decrypt here
 
 		// first 16 bytes are the unsigned char iv
-
-
+		printf("DEBUG: Received message containing:\n(");
+		for(int i=0;i<16;i++){
+			printf("%c",buffer[i]);
+		}
+		printf(" iv\n");
+		for(int i=16;i<1024;i++){
+			printf("%c",buffer[i]);
+		}
+		printf(" msg)\n");
 
 		/* Buffer message format:
 		0 account name (122 characters)

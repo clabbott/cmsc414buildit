@@ -11,3 +11,4 @@ Integer overflow
 OwO
 
 Known bug: on "card file already exists" or "card file does not exist", bank crashes. 
+Known bug: on "account for deposit does not exist", bank crashes
