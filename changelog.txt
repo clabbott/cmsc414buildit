@@ -3,3 +3,4 @@
 10:22pm 12/2 Clark- Increased the functionality to parse command line arguments in atm-main.c. 
 8:11pm 12/3 Clark- Added functionality to send information about the commands from atm to bank.
 12:34am 12/4 Clark- Symetrically encrypting from atm->bank but not decrypting. 
+12:12am 12/5 Clark- Decrypting at bank but having some small issues parsing the result. 
