@@ -5,6 +5,19 @@
 
 // Default port and ip address are defined here
 
+int sym_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, unsigned char *iv, unsigned char *plaintext){
+	EVP_CIPHER_CTX *ctx;
+	int len;
+	int plaintext_len;
+
+	if(!(ctx = EVP_CIPHER_CTX_new())){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 14\n");
+		exit(255);
+	}
+
+
+}
+
 struct linked_list_node {
 	char *account_balance;
 	char *account; // key
