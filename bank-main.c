@@ -185,7 +185,29 @@ int main(int argc, char** argv){
 
 	/* no error checking is done on any of this. may need to modify this */
 	
-	Bank *b = bank_create((auth_pos!=-1)?argv[auth_pos]:"bank.auth", ip, port);
+
+	// if not auth_file exists, create auth_file
+	//bank->auth_file = auth_file
+	char auth_file_name[200];
+	unsigned char sym_key[32];
+	strcpy(auth_file_name,(auth_pos!=-1)?argv[auth_pos]:"bank.auth");
+	FILE *auth_file;
+	if((auth_file = fopen(auth_file_name,"r"))){
+		fclose(auth_file);
+		printf("DEBUG: auth file already exists. Exiting with error.\n");
+		exit(255);
+	}else{
+		if((auth_file = fopen(auth_file_name,"w"))){
+			printf("DEBUG: writing super secret code to new auth file.\n");
+			RAND_bytes(sym_key,32);
+			fwrite(sym_key,1,sizeof(sym_key),auth_file);
+			fclose(auth_file);
+		}
+	}
+
+	Bank *b = bank_create(auth_file_name, ip, port);
+
+	
 
 	/* process each incoming client, one at a time, until complete */
 	for(;;) {
@@ -206,16 +228,27 @@ int main(int argc, char** argv){
 		// decrypt here
 
 		// first 16 bytes are the unsigned char iv
+		unsigned char iv[16];
+		unsigned char encrypted_msg[300];
+		unsigned char decrypted_msg[300];
 		printf("DEBUG: Received message containing:\n(");
 		for(int i=0;i<16;i++){
 			printf("%c",buffer[i]);
+			iv[i] = buffer[i];
 		}
 		printf(" iv\n");
-		for(int i=16;i<1024;i++){
+		for(int i=16;i<192;i++){
 			printf("%c",buffer[i]);
+			encrypted_msg[i-16] = buffer[i];
 		}
 		printf(" msg)\n");
-
+		int decrypted_length = sym_decrypt(encrypted_msg,192-16,sym_key,iv,decrypted_msg);
+		printf("DEBUG: length of decrypted message is %d.\nMessage is:(\n",decrypted_length);
+		for(int i=0;i<decrypted_length+9;i++){
+			printf("%c",decrypted_msg[i]);
+		}
+		printf(")\n");
+		
 		/* Buffer message format:
 		0 account name (122 characters)
 		1 card file value (32 characters)
@@ -228,7 +261,7 @@ int main(int argc, char** argv){
 		// memset(sent_account,'\0',sizeof(sent_account));
 		// strncpy(sent_account,buffer,122);
 		for(int i=0;i<122;i++){
-			sent_account[i] = buffer[buffer_idx++];
+			sent_account[i] = decrypted_msg[buffer_idx++];
 		}
 		sent_account[122] = '\0';
 		printf("DEBUG: ATM sent an account with account name of %s.\n",sent_account);
@@ -239,8 +272,8 @@ int main(int argc, char** argv){
 		// strncpy(sent_card_value,&(buffer[122]),32);
 		printf("DEBUG: ATM sent a card value of: '");
 		for(int i=0;i<32;i++){
-			sent_card_value[i] = buffer[buffer_idx++];
-			printf("%d",sent_card_value[i]);
+			sent_card_value[i] = decrypted_msg[buffer_idx++];
+			printf("%c",sent_card_value[i]);
 		}
 		sent_card_value[32] = '\0';
 		printf("'.\n");
@@ -251,7 +284,7 @@ int main(int argc, char** argv){
 		// memset(sent_mode_of_operation,'\0',sizeof(sent_mode_of_operation));
 		// strncpy(sent_mode_of_operation,&(buffer[122+32]),2);
 		for(int i=0;i<1;i++){
-			sent_mode_of_operation[i] = buffer[buffer_idx++];
+			sent_mode_of_operation[i] = decrypted_msg[buffer_idx++];
 		}
 		sent_mode_of_operation[2] = '\0';
 		printf("DEBUG: ATM sent a mode of operation of %s.\n",sent_mode_of_operation);
@@ -261,12 +294,14 @@ int main(int argc, char** argv){
 		// memset(sent_value_of_operation,'\0',sizeof(sent_value_of_operation));
 		// strncpy(sent_value_of_operation,&(buffer[122+32+2]),13);
 		for(int i=0;i<13;i++){
-			sent_value_of_operation[i] = buffer[buffer_idx++];
+			sent_value_of_operation[i] = decrypted_msg[buffer_idx++];
 		}
 		sent_value_of_operation[13] = '\0';
 		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
 		// printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
 
+		// TODO implement anti-repeat attack value 
+		
 		// do some validation ?
 		// TODO validation
 

@@ -9,23 +9,6 @@ Bank* bank_create(char *auth_file, char *ip, unsigned short port)
 {
 
 	Bank *bank = (Bank*) calloc(1, sizeof(Bank));
-    
-	// if not auth_file exists, create auth_file
-	//bank->auth_file = auth_file
-	FILE *file;
-	if((file = fopen(auth_file,"r"))){
-		fclose(file);
-		printf("DEBUG: auth file already exists. Exiting with error.\n");
-		exit(255);
-	}else{
-		if((file = fopen(auth_file,"w"))){
-			printf("DEBUG: writing super secret code to new auth file.\n");
-			unsigned char sym_key[32];
-			RAND_bytes(sym_key,32);
-			fwrite(sym_key,1,sizeof(sym_key),file);
-			fclose(file);
-		}
-	}
         
 	if(bank == NULL) {
 		perror("Could not allocate Bank");

@@ -357,6 +357,12 @@ int main(int argc, char** argv){
 		buffer[buffer_idx++] = operation_value[i];
 	}
 
+	printf("DEBUG: Printing entire message:(\n");
+	for(int i=0;i<buffer_idx;i++){
+		printf("%c",buffer[i]);
+	}
+	printf(")\n");
+
 	// encrypt here 
 	unsigned char *ciphertext = malloc(300*sizeof(char*));
 	unsigned char iv[16];
