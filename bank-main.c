@@ -219,6 +219,8 @@ int main(int argc, char** argv){
 			exit(255);
 		}
 
+		
+
 		/* okay, connected to bank/atm. Send/recv messages to/from the bank/atm. */
 		char buffer[1024];
 		char ret_buffer[1024];

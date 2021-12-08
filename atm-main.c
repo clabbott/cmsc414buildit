@@ -278,8 +278,7 @@ int main(int argc, char** argv){
 		exit(255);
 	}
 
-
-	ATM *atm = atm_create(ip_address, port_num);
+	
 
 	/* get authenticated */
 	// get card file set up 
@@ -389,6 +388,10 @@ int main(int argc, char** argv){
 		printf("%c",msg[i]);
 	}
 	printf(" msg)\n");
+
+	// move this to the end 
+	ATM *atm = atm_create(ip_address, port_num);
+	
 	atm_send(atm, msg, msg_len);
 
 	// atm_send(atm, buffer, sizeof(buffer));
