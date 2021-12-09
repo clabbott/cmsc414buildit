@@ -4,3 +4,6 @@
 8:11pm 12/3 Clark- Added functionality to send information about the commands from atm to bank.
 12:34am 12/4 Clark- Symetrically encrypting from atm->bank but not decrypting. 
 12:12am 12/5 Clark- Decrypting at bank but having some small issues parsing the result. 
+2:18am (fml) 12/8 Matthew - Converting string to ull for account balance and adding some int-overflow countermeasures. 
+    Create, deposit, and withdraw updated (withdraw still untested i gotta go to bed man D:). 
+    Basic functionality works but I can make it better (decimals are messed up rn)

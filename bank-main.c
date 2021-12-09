@@ -38,9 +38,9 @@ int sym_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *ke
 	EVP_CIPHER_CTX_free(ctx);
 	return plaintext_len;
 }
-
+#define ull unsigned long long
 struct linked_list_node {
-	char *account_balance;
+	ull account_balance;
 	char *account; // key
 	unsigned char *card_info;
 	struct linked_list_node *next;
@@ -50,15 +50,25 @@ struct linked_list_node *head = NULL;
 struct linked_list_node *curr = NULL;
 
 void insert(char *account,char *account_balance,unsigned char *card_info){
+	int neg_check = atoi(account_balance);
+	if (neg_check < 0) {
+		printf("ERROR: Please deposit a positive number\n");
+		return;
+	}
+	ull bal = (ull) atoi(account_balance);
+	if (bal >= 4294967295.99) {
+		printf("ERROR: Value to deposit too big -- please deposit in smaller increments\n");
+		return;
+	}
 	struct linked_list_node *new_node = (struct linked_list_node*)malloc(sizeof(struct linked_list_node));
 	
 	new_node->account = malloc(strlen(account)+1);
 	// memset(new_node->account,'\0',123);
 	strcpy(new_node->account,account);
 
-	new_node->account_balance = malloc(strlen(account_balance)+1);
+	new_node->account_balance = (ull) 0;
 	// memset(new_node->account_balance,'\0',15);
-	strcpy(new_node->account_balance,account_balance);
+	new_node->account_balance += bal;
 
 	new_node->card_info = malloc(strlen(card_info)+1);
 	// memset(new_node->card_info,'\0',33);
@@ -73,7 +83,7 @@ void printLinkedList(){
 	printf("\n[ ");
 
 	while(curr != NULL){
-		printf("(account:%s,\n  account_balance:%s,\n  card_info:%s)\n",curr->account,curr->account_balance,curr->card_info);
+		printf("(account:%s,\n  account_balance:%u,\n  card_info:%s)\n",curr->account,curr->account_balance,curr->card_info);
 		curr = curr->next;
 	}
 
@@ -299,6 +309,8 @@ int main(int argc, char** argv){
 			sent_value_of_operation[i] = decrypted_msg[buffer_idx++];
 		}
 		sent_value_of_operation[13] = '\0';
+		char *p = strchr(sent_value_of_operation, '.');
+		*p - 1 = '\0';
 		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
 		// printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
 
@@ -336,9 +348,15 @@ int main(int argc, char** argv){
 					}
 				}
 				if(valid == 1){
-					printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-					strcpy(ret_buffer, "But something happened!");
-					printLinkedList();
+					printf("DEBUG: Changing found's values..... matthew started this hopefully its finished and/or working.....\n");
+					ull val = (ull) atoi(sent_value_of_operation);
+					if ((val + found->account_balance) < LLONG_MAX) {
+						found->account_balance += val;
+						strcpy(ret_buffer, "But something happened!");
+						printLinkedList();
+					} else {
+						printf("ERROR -- Max account limit exceeded -- please withdraw some funds\n");
+					}
 				}else{
 					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
 					strcpy(ret_buffer, "But nothing happened.");
