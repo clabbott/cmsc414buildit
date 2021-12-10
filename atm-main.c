@@ -62,6 +62,13 @@ int main(int argc, char** argv){
 	recval_locs[3] corresponds to -c <card-loc> location in argv
 	recval_locs[4] corresponds to -a <account> location in argv
 	recval_locs[5] corresponds to "mode of operation" location in argv
+
+	REVISION FOR LINUX NOSPACE ARGUMENT RULE e.g. -i4000
+	positive integers indicate the argument's position and that 
+	the argument is the entire string 
+
+	negative integers indicate the argument's position subtracted from -1
+	and that the argument is only the latter portion of the string
 	*/
 	int recval_locs[] = {-1,-1,-1,-1,-1,-1};
 	/*
@@ -74,7 +81,7 @@ int main(int argc, char** argv){
 	int mode_of_operation = -1;
 	while(i<argc){
 		if(strcmp(argv[i],"-s")==0){
-			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[0]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
@@ -86,7 +93,7 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-i")==0){
-			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[1]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
@@ -98,7 +105,7 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-p")==0){
-			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[2]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
@@ -110,7 +117,7 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-c")==0){
-			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[3]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
@@ -122,7 +129,7 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-a")==0){
-			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[4]!=-1){
 				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
@@ -134,7 +141,7 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-n")==0){
-			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(mode_of_operation!=-1){
 				printf("DEBUG: Duplicate mode of operation argument with a mode of %s detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
@@ -147,7 +154,7 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-d")==0){
-			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(mode_of_operation!=-1){
 				printf("DEBUG: Duplicate mode of operation argument with a mode of %s detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
@@ -160,7 +167,7 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-w")==0){
-			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(mode_of_operation!=-1){
 				printf("DEBUG: Duplicate mode of operation argument with a mode of %s detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
@@ -173,13 +180,22 @@ int main(int argc, char** argv){
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-g")==0){
-			// printf("DEBUG: %s argument detected at %d\n",argv[i],i);
+			printf("DEBUG: %s argument detected at %d\n",argv[i],i);
 			if(mode_of_operation!=-1){
 				printf("DEBUG: Duplicate mode of operation argument with a mode of %s detected at %d\n",argv[i],i);
 				exit(255);
 			}else{
 				mode_of_operation = 3;
 				recval_locs[5] = i;
+			}
+			i+=1;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='s'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			if(recval_locs[0]!=-1){
+				printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				exit(255);
+			}else{
+				recval_locs[0] = -1-i;
 			}
 			i+=1;
 		}else{
@@ -202,7 +218,13 @@ int main(int argc, char** argv){
 	recval_locs[4] corresponds to -a <account> location in argv
 	recval_locs[5] corresponds to "mode of operation" location in argv
 	*/
-	char* auth_file_name = (recval_locs[0]==-1 ? "bank.auth" : argv[recval_locs[0]+1]);
+	char* auth_file_name;
+	if(recval_locs[0]<-1){
+		auth_file_name = &(argv[(recval_locs[0]+1)*-1][2]);
+	}else{
+		auth_file_name = (recval_locs[0]==-1 ? "bank.auth" : argv[recval_locs[0]+1]);
+	} 
+	// printf("DEBUG: auth file name is %s\n",auth_file_name);
 	char* ip_address = (recval_locs[1]==-1 ? "127.0.0.1" : argv[recval_locs[1]+1]);
 	int port_num = (recval_locs[2]==-1 ? 3000 : atoi(argv[recval_locs[2]+1]));
 	if(recval_locs[4]==-1){
@@ -391,7 +413,7 @@ int main(int argc, char** argv){
 
 	// move this to the end 
 	ATM *atm = atm_create(ip_address, port_num);
-	
+
 	atm_send(atm, msg, msg_len);
 
 	// atm_send(atm, buffer, sizeof(buffer));
