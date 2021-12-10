@@ -10,3 +10,5 @@ bank: bank-main.o bank.o net.o -lcrypto
 
 clean:
 	rm -f atm bank *.o
+	rm *.auth
+	rm *.card

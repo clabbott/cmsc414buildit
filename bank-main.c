@@ -310,7 +310,7 @@ int main(int argc, char** argv){
 		}
 		sent_value_of_operation[13] = '\0';
 		char *p = strchr(sent_value_of_operation, '.');
-		*p - 1 = '\0';
+		*(p-1) = '\0'; // MATTHEW I changed this from *p - 1 to *(p-1) because I was getting errors when I make clean and recompile it
 		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
 		// printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
 
