@@ -282,13 +282,10 @@ int main(int argc, char** argv){
 	char account[123];
 	memset(account,'\0',sizeof(account));
 	if(recval_locs[4]<-1){
-		port_num = atoi(&(argv[(recval_locs[2]+1)*-1][2]));
+		strncpy(account,&(argv[(recval_locs[4]+1)*-1][2]),122);
 	}else{
-		port_num = (recval_locs[2]==-1 ? 3000 : atoi(argv[recval_locs[2]+1]));
-	} 
-	printf("DEBUG: port num is %d\n",port_num);
-
-	strncpy(account,argv[recval_locs[4]+1],122);
+		strncpy(account,argv[recval_locs[4]+1],122);
+	}
 	printf("DEBUG: account name is %d characters long, need to pad %d characters of space to the end.\n",strlen(account),122-strlen(account));
 	char natural_card_buff[128]; // holds the value of the natural card associated with this account if needed later
 	strcpy(natural_card_buff,account);
