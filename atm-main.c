@@ -543,14 +543,42 @@ int main(int argc, char** argv){
 	atm_send(atm, msg, msg_len);
 
 	// unsigned char *encrypted_bank_msg = malloc(300*sizeof(char*));
-	// atm_recv(atm, encrypted_bank_msg, sizeof(encrypted_bank_msg));
+	
 	// printf("atm received message\n");
 	// for(int i=0;i<300;i++){
 	// 	printf("%c",encrypted_bank_msg[i]);
 	// }
 	// printf(")\n");
 
+	char buffer_resp[1024];
+	/* okay, connected to bank/atm. Send/recv messages to/from the bank/atm. */
+	atm_recv(atm, buffer_resp, sizeof(buffer_resp));
 
+	// decrypt here
+
+	// first 16 bytes are the unsigned char iv
+	unsigned char iv_resp[16];
+	unsigned char encrypted_msg[300];
+	unsigned char decrypted_msg[300];
+	printf("DEBUG: Received message containing:\n(");
+	for(int i=0;i<16;i++){
+		printf("%c",buffer_resp[i]);
+		iv_resp[i] = buffer_resp[i];
+	}
+	printf(" iv\n");
+	for(int i=16;i<192;i++){
+		printf("%c",buffer_resp[i]);
+		encrypted_msg[i-16] = buffer_resp[i];
+	}
+	printf(" msg)\n");
+	// unsigned char auth_file_buffer[32]; is declared above
+	int decrypted_length = sym_decrypt(encrypted_msg,192-16,auth_file_buffer,iv_resp,decrypted_msg);
+	printf("DEBUG: length of decrypted message is %d.\nMessage is:(\n",decrypted_length);
+	for(int i=0;i<decrypted_length+9;i++){
+		printf("%c",decrypted_msg[i]);
+	}
+	printf(")\n");
+		
 
 	// decrypt here 
 

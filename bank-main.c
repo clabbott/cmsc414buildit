@@ -451,6 +451,14 @@ int main(int argc, char** argv){
 	// to be filled in with random bytes: unsigned char card_rand_bytes[32];
 	unsigned char card_rand_bytes[32];
 	RAND_bytes(card_rand_bytes,32);
+
+	// value doesnt matter
+	char operation_value[14];
+	memset(operation_value,'\0',sizeof(operation_value));
+	for(int i=strlen(operation_value);i<13;i++){
+		strcat(operation_value," ");
+	}
+
 	int buffer_idx_resp = 0;
 	// always 122 characters
 	for(int i=0;i<122;i++){
@@ -466,43 +474,43 @@ int main(int argc, char** argv){
 	}
 
 	printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
-	strcat(buffer,operation_value);
+	strcat(buffer_resp,operation_value);
 	for(int i=0;i<strlen(operation_value);i++){
-		buffer[buffer_idx++] = operation_value[i];
+		buffer_resp[buffer_idx_resp++] = operation_value[i];
 	}
 
 	printf("DEBUG: Printing entire message:(\n");
-	for(int i=0;i<buffer_idx;i++){
-		printf("%c",buffer[i]);
+	for(int i=0;i<buffer_idx_resp;i++){
+		printf("%c",buffer_resp[i]);
 	}
 	printf(")\n");
 
 	// encrypt here 
 	unsigned char *ciphertext = malloc(300*sizeof(char*));
-	unsigned char iv[16];
-	RAND_bytes(iv,16);
-	size_t iv_len = 16;
+	// unsigned char iv[16]; is read in above
+	// unsigned char sym_key[32]; is read in above
 
-	int ciphertext_len = sym_encrypt(buffer, strlen((char*)buffer),auth_file_buffer,iv,ciphertext);
+	int ciphertext_len = sym_encrypt(buffer_resp, strlen((char*)buffer_resp),sym_key,iv,ciphertext);
 
-	unsigned char *msg = malloc(300*sizeof(char*)+16);
+	unsigned char *msg_resp = malloc(300*sizeof(char*)+16);
 	for(int i=0;i<16;i++){
-		msg[i] = iv[i];
+		msg_resp[i] = iv[i];
 	}
 	for(int i=16;i<16+ciphertext_len;i++){
-		msg[i] = ciphertext[i-16];
+		msg_resp[i] = ciphertext[i-16];
 	}
-	int msg_len = ciphertext_len+16;
+	int msg_resp_len = ciphertext_len+16;
 
-	printf("DEBUG: Preparing to send message size %d containing:\n(",msg_len);
+	printf("DEBUG: Preparing to send message size %d containing:\n(",msg_resp_len);
 	for(int i=0;i<16;i++){
-		printf("%c",msg[i]);
+		printf("%c",msg_resp[i]);
 	}
 	printf(" iv\n");
-	for(int i=16;i<msg_len;i++){
-		printf("%c",msg[i]);
+	for(int i=16;i<msg_resp_len;i++){
+		printf("%c",msg_resp[i]);
 	}
 	printf(" msg)\n");
+	bank_send(b, msg_resp, msg_resp_len);
 
 		// encrypt here 
 		// unsigned char *ciphertext = malloc(300*sizeof(char*));
@@ -519,7 +527,7 @@ int main(int argc, char** argv){
 		// }
 		// printf(" msg)\n");
 
-		// bank_send(b, ciphertext, ciphertext_len);
+		
 		// if(is_valid==0){
 		// 	/* when finished processing commands ...*/
 		// 	close(b->clientfd);
