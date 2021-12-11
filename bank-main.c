@@ -292,7 +292,6 @@ int main(int argc, char** argv){
 		1 card file value (32 characters)
 		2 mode of operation (1 character)
 		3 value of operation (13 characters)
-		4 anti-repeat attack value (32 characters)
 		*/
 		int buffer_idx = 0;
 		char sent_account[123];
@@ -441,6 +440,69 @@ int main(int argc, char** argv){
 		}else{
 			// strcpy(ret_buffer, "Your transaction was invalid. Terminating connection.");
 		}
+		/* Buffer message format:
+		0 account name (122 characters)
+		1 card file value (32 characters)
+		2 mode of operation (1 character)
+		3 value of operation (13 characters)
+	*/
+	char buffer_resp[300] = "";
+	// created from msg above: char sent_account[123];
+	// to be filled in with random bytes: unsigned char card_rand_bytes[32];
+	unsigned char card_rand_bytes[32];
+	RAND_bytes(card_rand_bytes,32);
+	int buffer_idx_resp = 0;
+	// always 122 characters
+	for(int i=0;i<122;i++){
+		buffer_resp[buffer_idx_resp++] = sent_account[i];
+	}
+	// always 32 wacky characters
+	for(int i=0;i<32;i++){
+		buffer_resp[buffer_idx_resp++] = card_rand_bytes[i];
+	}
+	// placeholder value
+	for(int i=0;i<strlen("X");i++){
+		buffer_resp[buffer_idx_resp++] = 'X';
+	}
+
+	printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
+	strcat(buffer,operation_value);
+	for(int i=0;i<strlen(operation_value);i++){
+		buffer[buffer_idx++] = operation_value[i];
+	}
+
+	printf("DEBUG: Printing entire message:(\n");
+	for(int i=0;i<buffer_idx;i++){
+		printf("%c",buffer[i]);
+	}
+	printf(")\n");
+
+	// encrypt here 
+	unsigned char *ciphertext = malloc(300*sizeof(char*));
+	unsigned char iv[16];
+	RAND_bytes(iv,16);
+	size_t iv_len = 16;
+
+	int ciphertext_len = sym_encrypt(buffer, strlen((char*)buffer),auth_file_buffer,iv,ciphertext);
+
+	unsigned char *msg = malloc(300*sizeof(char*)+16);
+	for(int i=0;i<16;i++){
+		msg[i] = iv[i];
+	}
+	for(int i=16;i<16+ciphertext_len;i++){
+		msg[i] = ciphertext[i-16];
+	}
+	int msg_len = ciphertext_len+16;
+
+	printf("DEBUG: Preparing to send message size %d containing:\n(",msg_len);
+	for(int i=0;i<16;i++){
+		printf("%c",msg[i]);
+	}
+	printf(" iv\n");
+	for(int i=16;i<msg_len;i++){
+		printf("%c",msg[i]);
+	}
+	printf(" msg)\n");
 
 		// encrypt here 
 		// unsigned char *ciphertext = malloc(300*sizeof(char*));

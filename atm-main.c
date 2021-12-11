@@ -482,7 +482,6 @@ int main(int argc, char** argv){
 		1 card file value (32 characters)
 		2 mode of operation (1 character)
 		3 value of operation (13 characters)
-		4 anti-repeat attack value (32 characters)
 	*/
 	char buffer[300] = "";
 	int buffer_idx = 0;
