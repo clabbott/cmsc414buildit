@@ -527,28 +527,39 @@ int main(int argc, char** argv){
 		printf("%c",decrypted_msg_rec2[i]);
 	}
 	printf(" acct\n");
-	for(int i=122;i<122+32;i++){
+	for(int i=122;i<122+16;i++){
 		printf("%c",decrypted_msg_rec2[i]);
 		if(card_rand_bytes[i-122]!=decrypted_msg_rec2[i]){
-			printf("\n %c != %c\n",card_rand_bytes[i-122],decrypted_msg_rec2[i]);
+			// printf("(%c!=%c)",card_rand_bytes[i-122],decrypted_msg_rec2[i]);
 			// TODO close connection
 		}
 	}
 	printf(" val\n");
+	printf("DEBUG: Expected :(\n");
+	for(int i=0;i<16;i++){
+		printf("%c",card_rand_bytes[i]);
+	}
+	printf(" value\n");
+
 
 	
 	struct linked_list_node *found = find_account(sent_account);
 	if(found==NULL){
 		// TODO close connection
 	}
-	for(int i=122+32;i<122+32+32;i++){
+	for(int i=122+16;i<122+32;i++){
 		printf("%c",decrypted_msg_rec2[i]);
 		if(found->card_info[i-(122+32)]!=decrypted_msg_rec2[i]){
-			printf("\n %c != %c\n",found->card_info[i-(122+32)],decrypted_msg_rec2[i]);
+			// printf("(%c!=%c)",found->card_info[i-(122+32)],decrypted_msg_rec2[i]);
 			// TODO close connection
 		}
 	}
 	printf(" card\n");
+	printf("DEBUG: Expected :(\n");
+	for(int i=0;i<16;i++){
+		printf("%c",found->card_info[i]);
+	}
+	printf(" value\n");
 
 
 	// Verified that this is not a repeat attack

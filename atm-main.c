@@ -590,28 +590,27 @@ int main(int argc, char** argv){
 
 	// time to append card value to prevent against repeat attacks
 	// msg is currently 160 chars long
-	for(int i=122+32;i<122+32+32;i++){
+	for(int i=122+16;i<122+32;i++){
 		decrypted_msg[i] = card_file_buffer[i];
 	}
 
-	printf("DEBUG: Plaintext of next message is:(\n");
 	printf("DEBUG: length of decrypted message is %d. Message is:(\n",decrypted_length+32);
 	for(int i=0;i<122;i++){
 		printf("%c",decrypted_msg[i]);
 	}
 	printf(" acct\n");
-	for(int i=122;i<122+32;i++){
+	for(int i=122;i<122+16;i++){
 		printf("%c",decrypted_msg[i]);
 	}
 	printf(" val\n");
-	for(int i=122+32;i<122+32+32;i++){
+	for(int i=122+16;i<122+32;i++){
 		printf("%c",decrypted_msg[i]);
 	}
 	printf(" card\n");
 
 	unsigned char *ciphertext_resp2 = malloc(300*sizeof(char*));
 
-	int ciphertext_len_resp2 = sym_encrypt(decrypted_msg, decrypted_length+32,auth_file_buffer,iv,ciphertext_resp2);
+	int ciphertext_len_resp2 = sym_encrypt(decrypted_msg, decrypted_length,auth_file_buffer,iv,ciphertext_resp2);
 
 	printf("DEBUG: Preparing to send message size %d:\n(",ciphertext_len_resp2);
 	atm_send(atm, ciphertext_resp2, ciphertext_len_resp2);
