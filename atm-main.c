@@ -47,6 +47,35 @@ int sym_encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
 	return ciphertext_len;
 }
 
+int sym_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, unsigned char *iv, unsigned char *plaintext){
+	EVP_CIPHER_CTX *ctx;
+	int len;
+	int plaintext_len;
+
+	// create and init context
+	if(!(ctx = EVP_CIPHER_CTX_new())){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 20\n");
+		exit(255);
+	}
+
+	// init decrypt operation
+	if(1!= EVP_DecryptInit_ex(ctx,EVP_aes_256_cbc(),NULL,key,iv)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 26\n");
+		exit(255);
+	}
+
+	// put decrypted message, get output
+	if(1!= EVP_DecryptUpdate(ctx,plaintext,&len,ciphertext,ciphertext_len)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 32\n");
+		exit(255);
+	}
+	plaintext_len = len;
+
+	//Cleanup 
+	EVP_CIPHER_CTX_free(ctx);
+	return plaintext_len;
+}
+
 int main(int argc, char** argv){
   	unsigned short port = 3000;
 	char *ipAddr = "127.0.0.1";
@@ -514,22 +543,29 @@ int main(int argc, char** argv){
 
 	atm_send(atm, msg, msg_len);
 
-	atm_recv(atm, buffer, sizeof(buffer));
+
+	unsigned char *encrypted_bank_msg = malloc(sizeof(char*)*300);
+	atm_recv(atm, encrypted_bank_msg, sizeof(encrypted_bank_msg));
+	printf("atm received message\n");
+	for(int i=0;i<300;i++){
+		printf("%c",encrypted_bank_msg[i]);
+	}
+	printf(")\n");
+
 
 
 	// decrypt here 
 
-	printf("atm received %s\n", buffer);
-	char resp2_buffer[1024];
+	// char resp2_buffer[1024];
 
 	// encrypt here
 
-	atm_send(atm, msg, msg_len);
+	// atm_send(atm, msg, msg_len);
 
 	// decrypt here
 
 
-	atm_recv(atm, buffer, sizeof(buffer));
+	// atm_recv(atm, buffer, sizeof(buffer));
 	
 	atm_free(atm);
 	

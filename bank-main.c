@@ -455,7 +455,7 @@ int main(int argc, char** argv){
 		}
 		printf(" msg)\n");
 
-		bank_send(b, ret_buffer, strlen(ret_buffer)+1);
+		bank_send(b, ciphertext, ciphertext_len);
 		if(is_valid==0){
 			/* when finished processing commands ...*/
 			close(b->clientfd);
