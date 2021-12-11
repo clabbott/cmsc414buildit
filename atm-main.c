@@ -587,9 +587,14 @@ int main(int argc, char** argv){
 		printf("%c",decrypted_msg[i]);
 	}
 	printf(" val\n");
-		
 
-	// decrypt here 
+	// time to append card value to prevent against repeat attacks
+	// msg is currently 160 chars long
+	for(int i=122+32;i<122+32+32;i++){
+		decrypted_msg[i] = card_file_buffer[i];
+	}
+
+
 
 	// char resp2_buffer[1024];
 
