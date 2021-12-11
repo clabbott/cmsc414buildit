@@ -641,17 +641,6 @@ int main(int argc, char** argv){
 		}
 	}
 	printf("\n");
-
-	// char resp2_buffer[1024];
-
-	// encrypt here
-
-	// atm_send(atm, msg, msg_len);
-
-	// decrypt here
-
-
-	// atm_recv(atm, buffer, sizeof(buffer));
 	
 	atm_free(atm);
 	
