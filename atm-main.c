@@ -207,6 +207,24 @@ int main(int argc, char** argv){
 				recval_locs[1] = -1-i;
 			}
 			i+=1;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='p'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			if(recval_locs[2]!=-1){
+				printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				exit(255);
+			}else{
+				recval_locs[2] = -1-i;
+			}
+			i+=1;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='c'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			if(recval_locs[3]!=-1){
+				printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				exit(255);
+			}else{
+				recval_locs[3] = -1-i;
+			}
+			i+=1;
 		}else{
 			printf("DEBUG: Argument at %d was invalid. Value is %s\n",i,argv[i]);
 			exit(255);
@@ -241,7 +259,13 @@ int main(int argc, char** argv){
 		ip_address = (recval_locs[1]==-1 ? "127.0.0.1" : argv[recval_locs[1]+1]);
 	} 
 	printf("DEBUG: ip is %s\n",ip_address);
-	int port_num = (recval_locs[2]==-1 ? 3000 : atoi(argv[recval_locs[2]+1]));
+	int port_num;
+	if(recval_locs[2]<-1){
+		port_num = atoi(&(argv[(recval_locs[2]+1)*-1][2]));
+	}else{
+		port_num = (recval_locs[2]==-1 ? 3000 : atoi(argv[recval_locs[2]+1]));
+	} 
+	printf("DEBUG: port num is %d\n",port_num);
 	if(recval_locs[4]==-1){
 		printf("DEBUG: No account name given to atm.\n");
 		exit(255);
@@ -258,7 +282,14 @@ int main(int argc, char** argv){
 	}
 	
 
-	char* card_file_name = (recval_locs[3]==-1 ? natural_card_buff : argv[recval_locs[3]+1]);
+	char* card_file_name;
+	if(recval_locs[3]<-1){
+		card_file_name = &(argv[(recval_locs[3]+1)*-1][2]);
+	}else{
+		card_file_name = (recval_locs[3]==-1 ? natural_card_buff : argv[recval_locs[3]+1]);
+	} 
+	printf("DEBUG: card file name is %s\n",card_file_name);
+	
 	if(recval_locs[5]==-1){
 		printf("DEBUG: No mode of operation given to atm.\n");
 		exit(255);
