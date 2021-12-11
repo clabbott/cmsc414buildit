@@ -498,17 +498,17 @@ int main(int argc, char** argv){
 		buffer[buffer_idx++] = mode_char[i];
 	}
 
-	printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
+	// printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
 	strcat(buffer,operation_value);
 	for(int i=0;i<strlen(operation_value);i++){
 		buffer[buffer_idx++] = operation_value[i];
 	}
 
-	printf("DEBUG: Printing entire message:(\n");
-	for(int i=0;i<buffer_idx;i++){
-		printf("%c",buffer[i]);
-	}
-	printf(")\n");
+	// printf("DEBUG: Printing entire message:(\n");
+	// for(int i=0;i<buffer_idx;i++){
+	// 	printf("%c",buffer[i]);
+	// }
+	// printf(")\n");
 
 	// encrypt here 
 	unsigned char *ciphertext = malloc(300*sizeof(char*));
@@ -527,15 +527,15 @@ int main(int argc, char** argv){
 	}
 	int msg_len = ciphertext_len+16;
 
-	printf("DEBUG: Preparing to send message size %d containing:\n(",msg_len);
-	for(int i=0;i<16;i++){
-		printf("%c",msg[i]);
-	}
-	printf(" iv\n");
-	for(int i=16;i<msg_len;i++){
-		printf("%c",msg[i]);
-	}
-	printf(" msg)\n");
+	// printf("DEBUG: Preparing to send message size %d containing:\n(",msg_len);
+	// for(int i=0;i<16;i++){
+	// 	printf("%c",msg[i]);
+	// }
+	// printf(" iv\n");
+	// for(int i=16;i<msg_len;i++){
+	// 	printf("%c",msg[i]);
+	// }
+	// printf(" msg)\n");
 
 	// move this to the end 
 	ATM *atm = atm_create(ip_address, port_num);
@@ -560,33 +560,33 @@ int main(int argc, char** argv){
 	unsigned char iv_resp[16];
 	unsigned char encrypted_msg[300];
 	unsigned char decrypted_msg[300];
-	printf("DEBUG: Received message containing:\n(");
+	// printf("DEBUG: Received message containing:\n(");
 	for(int i=0;i<16;i++){
-		printf("%c",buffer_resp[i]);
+		// printf("%c",buffer_resp[i]);
 		iv_resp[i] = buffer_resp[i];
 	}
-	printf(" iv\n");
+	// printf(" iv\n");
 	for(int i=16;i<16+122;i++){
-		printf("%c",buffer_resp[i]);
+		// printf("%c",buffer_resp[i]);
 		encrypted_msg[i-16] = buffer_resp[i];
 	}
-	printf(" acct name)\n");
+	// printf(" acct name)\n");
 	for(int i=16+122;i<16+122+32;i++){
-		printf("%c",buffer_resp[i]);
+		// printf("%c",buffer_resp[i]);
 		encrypted_msg[i-16] = buffer_resp[i];
 	}
-	printf(" randbytes)\n");
+	// printf(" randbytes)\n");
 	// unsigned char auth_file_buffer[32]; is declared above
 	int decrypted_length = sym_decrypt(encrypted_msg,16+122+32,auth_file_buffer,iv_resp,decrypted_msg);
-	printf("DEBUG: length of decrypted message is %d. Message is:(\n",decrypted_length);
-	for(int i=0;i<122;i++){
-		printf("%c",decrypted_msg[i]);
-	}
-	printf(" acct\n");
-	for(int i=122;i<122+32;i++){
-		printf("%c",decrypted_msg[i]);
-	}
-	printf(" val\n");
+	// printf("DEBUG: length of decrypted message is %d. Message is:(\n",decrypted_length);
+	// for(int i=0;i<122;i++){
+	// 	printf("%c",decrypted_msg[i]);
+	// }
+	// printf(" acct\n");
+	// for(int i=122;i<122+32;i++){
+	// 	printf("%c",decrypted_msg[i]);
+	// }
+	// printf(" val\n");
 
 	// time to append card value to prevent against repeat attacks
 	// msg is currently 160 chars long
@@ -594,25 +594,25 @@ int main(int argc, char** argv){
 		decrypted_msg[i] = card_file_buffer[i];
 	}
 
-	printf("DEBUG: length of decrypted message is %d. Message is:(\n",decrypted_length+32);
-	for(int i=0;i<122;i++){
-		printf("%c",decrypted_msg[i]);
-	}
-	printf(" acct\n");
-	for(int i=122;i<122+16;i++){
-		printf("%c",decrypted_msg[i]);
-	}
-	printf(" val\n");
-	for(int i=122+16;i<122+32;i++){
-		printf("%c",decrypted_msg[i]);
-	}
-	printf(" card\n");
+	// printf("DEBUG: length of decrypted message is %d. Message is:(\n",decrypted_length+32);
+	// for(int i=0;i<122;i++){
+	// 	printf("%c",decrypted_msg[i]);
+	// }
+	// printf(" acct\n");
+	// for(int i=122;i<122+16;i++){
+	// 	printf("%c",decrypted_msg[i]);
+	// }
+	// printf(" val\n");
+	// for(int i=122+16;i<122+32;i++){
+	// 	printf("%c",decrypted_msg[i]);
+	// }
+	// printf(" card\n");
 
 	unsigned char *ciphertext_resp2 = malloc(300*sizeof(char*));
 
 	int ciphertext_len_resp2 = sym_encrypt(decrypted_msg, decrypted_length,auth_file_buffer,iv,ciphertext_resp2);
 
-	printf("DEBUG: Preparing to send message size %d:\n(",ciphertext_len_resp2);
+	// printf("DEBUG: Preparing to send message size %d:\n(",ciphertext_len_resp2);
 	atm_send(atm, ciphertext_resp2, ciphertext_len_resp2);
 	
 

@@ -373,6 +373,7 @@ int main(int argc, char** argv){
 				}
 				if(valid == 1){
 					printf("DEBUG: Changing found's values..... matthew started this hopefully its finished and/or working.....\n");
+					// TODO move this operation to later until the atm has passed the repeat attack check
 					ull val = (ull) atoi(sent_value_of_operation);
 					if ((val + found->account_balance) < LLONG_MAX) {
 						found->account_balance += val;
@@ -436,7 +437,7 @@ int main(int argc, char** argv){
 
 		// msg asking for modified echo here
 		if(is_valid==1){
-			// do nothing
+			// do everything
 		}else{
 			// close the connection TODO
 		}
@@ -481,11 +482,11 @@ int main(int argc, char** argv){
 	// }
 	// 13 chars
 
-	printf("DEBUG: Printing entire message:(\n");
-	for(int i=0;i<buffer_idx_resp;i++){
-		printf("%c",buffer_resp[i]);
-	}
-	printf(")\n");
+	// printf("DEBUG: Printing entire message:(\n");
+	// for(int i=0;i<buffer_idx_resp;i++){
+	// 	printf("%c",buffer_resp[i]);
+	// }
+	// printf(")\n");
 
 	// encrypt here 
 	unsigned char *ciphertext = malloc(300*sizeof(char*));
@@ -503,113 +504,49 @@ int main(int argc, char** argv){
 	}
 	int msg_resp_len = ciphertext_len+16;
 
-	printf("DEBUG: Preparing to send message size %d containing:\n(",msg_resp_len);
-	for(int i=0;i<16;i++){
-		printf("%c",msg_resp[i]);
-	}
-	printf(" iv\n");
-	for(int i=16;i<msg_resp_len;i++){
-		printf("%c",msg_resp[i]);
-	}
-	printf(" msg)\n");
+	// printf("DEBUG: Preparing to send message size %d containing:\n(",msg_resp_len);
+	// for(int i=0;i<16;i++){
+	// 	printf("%c",msg_resp[i]);
+	// }
+	// printf(" iv\n");
+	// for(int i=16;i<msg_resp_len;i++){
+	// 	printf("%c",msg_resp[i]);
+	// }
+	// printf(" msg)\n");
 	bank_send(b, msg_resp, msg_resp_len);
 
 	char buffer_rec2[1024];
 	bank_recv(b, buffer_rec2, sizeof(buffer_rec2));
-	for(int i=0;i<208;i++){
-		printf("%c",buffer_rec2[i]);
-	}
-	printf(" msg");
+	// for(int i=0;i<208;i++){
+	// 	printf("%c",buffer_rec2[i]);
+	// }
+	// printf(" msg");
 	unsigned char decrypted_msg_rec2[300];
 	int decrypted_length_rec2 = sym_decrypt(buffer_rec2,208,sym_key,iv,decrypted_msg_rec2);
-	printf("DEBUG: Received decrypted message of size %d containing:(\n",decrypted_length_rec2);
-	for(int i=0;i<122;i++){
-		printf("%c",decrypted_msg_rec2[i]);
-	}
-	printf(" acct\n");
+	// printf("DEBUG: Received decrypted message of size %d containing:(\n",decrypted_length_rec2);
+	// for(int i=0;i<122;i++){
+	// 	printf("%c",decrypted_msg_rec2[i]);
+	// }
+	// printf(" acct\n");
 	for(int i=122;i<122+16;i++){
 		printf("%c",decrypted_msg_rec2[i]);
 		if(card_rand_bytes[i-122]!=decrypted_msg_rec2[i]){
 			// printf("(%c!=%c)",card_rand_bytes[i-122],decrypted_msg_rec2[i]);
 			// TODO close connection
+			printf("DEBUG: Repeat attack detected! Terminating the connection.\n");
+			// TODO terminate the connection
 		}
 	}
-	printf(" val\n");
-	printf("DEBUG: Expected :(\n");
-	for(int i=0;i<16;i++){
-		printf("%c",card_rand_bytes[i]);
-	}
-	printf(" value\n");
-
-
-	
-	struct linked_list_node *found = find_account(sent_account);
-	if(found==NULL){
-		// TODO close connection
-	}
-	for(int i=122+16;i<122+32;i++){
-		printf("%c",decrypted_msg_rec2[i]);
-		if(found->card_info[i-(122+32)]!=decrypted_msg_rec2[i]){
-			// printf("(%c!=%c)",found->card_info[i-(122+32)],decrypted_msg_rec2[i]);
-			// TODO close connection
-		}
-	}
-	printf(" card\n");
-	printf("DEBUG: Expected :(\n");
-	for(int i=0;i<16;i++){
-		printf("%c",found->card_info[i]);
-	}
-	printf(" value\n");
-
+	// printf(" val\n");
+	// printf("DEBUG: Expected :(\n");
+	// for(int i=0;i<16;i++){
+	// 	printf("%c",card_rand_bytes[i]);
+	// }
+	// printf(" value\n");
 
 	// Verified that this is not a repeat attack
 
 	
-		// encrypt here 
-		// unsigned char *ciphertext = malloc(300*sizeof(char*));
-		// size_t iv_len = 16;
-		// unsigned char *rand_bytes = malloc(65*sizeof(char*));
-		// RAND_bytes(rand_bytes,64);
-		// // unsigned *char ret_buffer[1024];
-
-		// int ciphertext_len = sym_encrypt(rand_bytes,64,sym_key,iv,ciphertext);
-
-		// printf("DEBUG: Preparing to send message size %d containing:\n(",ciphertext_len);
-		// for(int i=0;i<ciphertext_len;i++){
-		// 	printf("%c",ciphertext[i]);
-		// }
-		// printf(" msg)\n");
-
-		
-		// if(is_valid==0){
-		// 	/* when finished processing commands ...*/
-		// 	close(b->clientfd);
-		// 	b->clientfd = -1;
-		// }
-
-		// char resp2_buffer[1024];
-		// bank_recv(b, resp2_buffer, sizeof(resp2_buffer));
-
-		// printf("DEBUG: Received message containing:\n(");
-		// for(int i=0;i<16;i++){
-		// 	printf("%c",resp2_buffer[i]);
-		// 	iv[i] = resp2_buffer[i];
-		// }
-		// printf(" iv\n");
-		// for(int i=16;i<192;i++){
-		// 	printf("%c",buffer[i]);
-		// 	encrypted_msg[i-16] = buffer[i];
-		// }
-
-		// decrypt here
-		// int decrypted_length = sym_decrypt(encrypted_msg,192-16,sym_key,iv,decrypted_msg);
-		// printf("DEBUG: length of decrypted message is %d.\nMessage is:(\n",decrypted_length);
-		// for(int i=0;i<decrypted_length+9;i++){
-		// 	printf("%c",decrypted_msg[i]);
-		// }
-		// printf(")\n");
-
-		// see if it matches what we are supposed to see
 
 		// char final_msg_buffer[1024];
 		// encrypt here
