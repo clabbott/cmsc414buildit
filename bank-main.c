@@ -17,26 +17,26 @@ int sym_encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
 
 	// creat and init context
 	if(!(ctx = EVP_CIPHER_CTX_new())){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 16\n");
+		// printf("DEBUG: Wuhwoh things are getting fonky at line 16\n");
 		exit(255);
 	}
 
 	// init encryption operation 
 	if(1!= EVP_EncryptInit_ex(ctx,EVP_aes_256_cbc(),NULL,key,iv)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 22\n");
+		// printf("DEBUG: Wuhwoh things are getting fonky at line 22\n");
 		exit(255);
 	}
 
 	// provide message to be encrypted/ get output
 	if(1!= EVP_EncryptUpdate(ctx,ciphertext,&len,plaintext,plaintext_len)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
+		// printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
 		exit(255);
 	}
 	ciphertext_len = len;
 
 	// finalize the encryption 
 	if(1!=EVP_EncryptFinal_ex(ctx,ciphertext+len,&len)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
+		// printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
 		exit(255);
 	}
 	ciphertext_len += len;
@@ -53,19 +53,19 @@ int sym_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *ke
 
 	// create and init context
 	if(!(ctx = EVP_CIPHER_CTX_new())){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 20\n");
+		// printf("DEBUG: Wuhwoh things are getting fonky at line 20\n");
 		exit(255);
 	}
 
 	// init decrypt operation
 	if(1!= EVP_DecryptInit_ex(ctx,EVP_aes_256_cbc(),NULL,key,iv)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 26\n");
+		// printf("DEBUG: Wuhwoh things are getting fonky at line 26\n");
 		exit(255);
 	}
 
 	// put decrypted message, get output
 	if(1!= EVP_DecryptUpdate(ctx,plaintext,&len,ciphertext,ciphertext_len)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 32\n");
+		// printf("DEBUG: Wuhwoh things are getting fonky at line 32\n");
 		exit(255);
 	}
 	plaintext_len = len;
@@ -150,49 +150,49 @@ int main(int argc, char** argv){
 	int recval_locs[] = {-1,-1};
 	while(i<argc){
 		if(strcmp(argv[i],"-p")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[0]!=-1){
-				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				// printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
 			}else if(i+1>=argc){
-				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
+				// printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				recval_locs[0] = i;
 			}
 			i+=2;
 		}else if(strcmp(argv[i],"-s")==0){
-			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			// printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 			if(recval_locs[1]!=-1){
-				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				// printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
 				exit(255);
 			}else if(i+1>=argc){
-				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
+				// printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
 				exit(255);
 			}else{
 				recval_locs[1] = i;
 			}
 			i+=2;
 		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='p'){
-			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			// printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
 			if(recval_locs[0]!=-1){
-				printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				// printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
 				exit(255);
 			}else{
 				recval_locs[0] = -1-i;
 			}
 			i+=1;
 		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='s'){
-			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			// printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
 			if(recval_locs[1]!=-1){
-				printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				// printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
 				exit(255);
 			}else{
 				recval_locs[1] = -1-i;
 			}
 			i+=1;
 		}else{
-			printf("DEBUG: Argument at %d was invalid. Value is %s\n",i,argv[i]);
+			// printf("DEBUG: Argument at %d was invalid. Value is %s\n",i,argv[i]);
 			exit(255);
 		}
 	}
@@ -200,7 +200,7 @@ int main(int argc, char** argv){
 	int port_num;
 	unsigned short port;
 	if(recval_locs[0]<-1){
-		printf("Preparing to look for port at %d\n",(recval_locs[0]+1)*-1);
+		// printf("Preparing to look for port at %d\n",(recval_locs[0]+1)*-1);
 		port_num = atoi(&(argv[(recval_locs[0]+1)*-1][2]));
 	}else{
 		port_num = (recval_locs[0]==-1 ? 3000 : atoi(argv[recval_locs[0]+1]));
@@ -209,7 +209,7 @@ int main(int argc, char** argv){
 
 	char *auth_file_name;
 	if(recval_locs[1]<-1){
-		printf("Preparing to look for authfile at %d\n",(recval_locs[1]+1)*-1);
+		// printf("Preparing to look for authfile at %d\n",(recval_locs[1]+1)*-1);
 		auth_file_name = &(argv[(recval_locs[1]+1)*-1][2]);
 	}else{
 		auth_file_name = (recval_locs[1]==-1 ? "bank.auth" : argv[recval_locs[1]+1]);
@@ -218,8 +218,8 @@ int main(int argc, char** argv){
 	unsigned char sym_key[32];
 
 	// print the values that we learned 
-	printf("DEBUG: The port, as entered, is %d\n",(int)port);
-	printf("DEBUG: The auth file is %s\n",auth_file_name);
+	// printf("DEBUG: The port, as entered, is %d\n",(int)port);
+	// printf("DEBUG: The auth file is %s\n",auth_file_name);
 
 	/* no error checking is done on any of this. may need to modify this */
 	
@@ -230,11 +230,11 @@ int main(int argc, char** argv){
 	FILE *auth_file;
 	if((auth_file = fopen(auth_file_name,"r"))){
 		fclose(auth_file);
-		printf("DEBUG: auth file already exists. Exiting with error.\n");
+		// printf("DEBUG: auth file already exists. Exiting with error.\n");
 		exit(255);
 	}else{
 		if((auth_file = fopen(auth_file_name,"w"))){
-			printf("DEBUG: writing super secret code to new auth file.\n");
+			// printf("DEBUG: writing super secret code to new auth file.\n");
 			RAND_bytes(sym_key,32);
 			fwrite(sym_key,1,sizeof(sym_key),auth_file);
 			fclose(auth_file);
@@ -269,23 +269,23 @@ int main(int argc, char** argv){
 		unsigned char iv[16];
 		unsigned char encrypted_msg[300];
 		unsigned char decrypted_msg[300];
-		printf("DEBUG: Received message containing:\n(");
+		// printf("DEBUG: Received message containing:\n(");
 		for(int i=0;i<16;i++){
-			printf("%c",buffer[i]);
+			//printf("%c",buffer[i]);
 			iv[i] = buffer[i];
 		}
-		printf(" iv\n");
+		// printf(" iv\n");
 		for(int i=16;i<192;i++){
-			printf("%c",buffer[i]);
+			//printf("%c",buffer[i]);
 			encrypted_msg[i-16] = buffer[i];
 		}
-		printf(" msg)\n");
+		// printf(" msg)\n");
 		int decrypted_length = sym_decrypt(encrypted_msg,192-16,sym_key,iv,decrypted_msg);
-		printf("DEBUG: length of decrypted message is %d.\nMessage is:(\n",decrypted_length);
+		// printf("DEBUG: length of decrypted message is %d.\nMessage is:(\n",decrypted_length);
 		for(int i=0;i<decrypted_length+9;i++){
-			printf("%c",decrypted_msg[i]);
+			//printf("%c",decrypted_msg[i]);
 		}
-		printf(")\n");
+		// printf(")\n");
 		
 		/* Buffer message format:
 		0 account name (122 characters)
@@ -301,19 +301,19 @@ int main(int argc, char** argv){
 			sent_account[i] = decrypted_msg[buffer_idx++];
 		}
 		sent_account[122] = '\0';
-		printf("DEBUG: ATM sent an account with account name of %s.\n",sent_account);
+		// printf("DEBUG: ATM sent an account with account name of %s.\n",sent_account);
 		// printf("DEBUG: Remaining string is %s.\n",&(buffer[122]));
 
 		unsigned char sent_card_value[33];
 		// memset(sent_card_value,'\0',sizeof(sent_card_value));
 		// strncpy(sent_card_value,&(buffer[122]),32);
-		printf("DEBUG: ATM sent a card value of: '");
+		// printf("DEBUG: ATM sent a card value of: '");
 		for(int i=0;i<32;i++){
 			sent_card_value[i] = decrypted_msg[buffer_idx++];
-			printf("%c",sent_card_value[i]);
+			// printf("%c",sent_card_value[i]);
 		}
 		sent_card_value[32] = '\0';
-		printf("'.\n");
+		// printf("'.\n");
 		// printf("DEBUG: ATM sent a card value of %s.\n",sent_card_value);
 		// printf("DEBUG: Remaining string is %s.\n",&(buffer[122+32]));
 
@@ -324,7 +324,7 @@ int main(int argc, char** argv){
 			sent_mode_of_operation[i] = decrypted_msg[buffer_idx++];
 		}
 		sent_mode_of_operation[2] = '\0';
-		printf("DEBUG: ATM sent a mode of operation of %s.\n",sent_mode_of_operation);
+		// printf("DEBUG: ATM sent a mode of operation of %s.\n",sent_mode_of_operation);
 		// printf("DEBUG: Remaining string is %s.\n",&(buffer[122+32+2]));
 
 		char sent_value_of_operation[15];
@@ -336,7 +336,7 @@ int main(int argc, char** argv){
 		sent_value_of_operation[13] = '\0';
 		char *p = strchr(sent_value_of_operation, '.');
 		*(p) = '\0'; // MATTHEW I changed this from *p - 1 to *(p) because I was getting errors when I make clean and recompile it
-		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
+		// printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
 		// printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
 
 		
@@ -349,19 +349,19 @@ int main(int argc, char** argv){
 		// TODO: Implement a system to check 
 		int is_valid = 1;
 		if('n'==sent_mode_of_operation[0]){
-			printf("DEBUG: The atm wants to make a new account.\n");
+			// printf("DEBUG: The atm wants to make a new account.\n");
 			if(find_account(sent_account)!=NULL){
-				printf("DEBUG: That account for '%s' already exists!\n",sent_account);
+				// printf("DEBUG: That account for '%s' already exists!\n",sent_account);
 				is_valid = 0;
 			}else{
 				insert(sent_account,sent_value_of_operation,sent_card_value);
-				printLinkedList();
+				//printLinkedList();
 			}
 		}else if('d'==sent_mode_of_operation[0]){
-			printf("DEBUG: The atm wants to deposit.\n");
+			// printf("DEBUG: The atm wants to deposit.\n");
 			struct linked_list_node *found = find_account(sent_account);
 			if(found==NULL){
-				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+				// printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
 				is_valid = 0;
 			}else{
 				// check if card is valid
@@ -372,25 +372,25 @@ int main(int argc, char** argv){
 					}
 				}
 				if(valid == 1){
-					printf("DEBUG: Changing found's values..... matthew started this hopefully its finished and/or working.....\n");
+					// printf("DEBUG: Changing found's values..... matthew started this hopefully its finished and/or working.....\n");
 					// TODO move this operation to later until the atm has passed the repeat attack check
 					ull val = (ull) atoi(sent_value_of_operation);
 					if ((val + found->account_balance) < LLONG_MAX) {
 						found->account_balance += val;
-						printLinkedList();
+						//printLinkedList();
 					} else {
 						printf("ERROR -- Max account limit exceeded -- please withdraw some funds\n");
 					}
 				}else{
-					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
+					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
 					is_valid = 0;
 				}
 			}
 		}else if('w'==sent_mode_of_operation[0]){
-			printf("DEBUG: The atm wants to widthdraw.\n");
+			// printf("DEBUG: The atm wants to widthdraw.\n");
 			struct linked_list_node *found = find_account(sent_account);
 			if(found==NULL){
-				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+				// printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
 				is_valid = 0;
 			}else{
 				// check if card is valid
@@ -401,18 +401,18 @@ int main(int argc, char** argv){
 					}
 				}
 				if(valid == 1){
-					printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-					printLinkedList();
+					// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+					//printLinkedList();
 				}else{
-					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
+					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
 					is_valid = 0;
 				}
 			}
 		}else if('g'==sent_mode_of_operation[0]){
-			printf("DEBUG: The atm wants to check the balance of an account.\n");
+			// printf("DEBUG: The atm wants to check the balance of an account.\n");
 			struct linked_list_node *found = find_account(sent_account);
 			if(found==NULL){
-				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+				// printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
 				is_valid = 0;
 			}else{
 				// check if card is valid
@@ -423,21 +423,21 @@ int main(int argc, char** argv){
 					}
 				}
 				if(valid == 1){
-					printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-					printLinkedList();
+					// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+					//printLinkedList();
 				}else{
-					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
+					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
 					is_valid = 0;
 				}
 			}
 		}else{
-			printf("DEBUG: The atm sent an invalid mode of operation: '%c'.\n",sent_mode_of_operation[0]);
+			// printf("DEBUG: The atm sent an invalid mode of operation: '%c'.\n",sent_mode_of_operation[0]);
 			is_valid = 0;
 		}
 
 		// msg asking for modified echo here
 		if(is_valid==1){
-			printf("DEBUG: Communication is valid so far- defending against repeat attacks.\n");
+			// printf("DEBUG: Communication is valid so far- defending against repeat attacks.\n");
 			// do everything
 			/* Buffer message format:
 				0 account name (122 characters)
@@ -527,11 +527,11 @@ int main(int argc, char** argv){
 			// }
 			// printf(" acct\n");
 			for(int i=122;i<122+16;i++){
-				printf("%c",decrypted_msg_rec2[i]);
+				//printf("%c",decrypted_msg_rec2[i]);
 				if(card_rand_bytes[i-122]!=decrypted_msg_rec2[i]){
 					// printf("(%c!=%c)",card_rand_bytes[i-122],decrypted_msg_rec2[i]);
 					// TODO close connection
-					printf("DEBUG: Repeat attack detected! Terminating the connection.\n");
+					// printf("DEBUG: Repeat attack detected! Terminating the connection.\n");
 					// TODO terminate the connection
 				}
 			}
@@ -544,18 +544,20 @@ int main(int argc, char** argv){
 
 			// Verified that this is not a repeat attack
 			printf("DEBUG: Everything so far is valid- changes to state are now going to be made and returned.\n");
+			
 
 			// MATTHEW TODO MAKE CHANGES TO BANK STATE HERE- EVERYHTING IS VERIFIED NOW
-			char final_value[300] = "testing\0";
+			char final_value[300] = "\"account\":\"bob\",\"initial_balance\":\"10.00\"\0";
 
-			
+
+			printLinkedList();
 			// CHANGES ARE DONE BEING MADE HERE
 			// NOW PRINTING FINAL VALUE FOR BANK
 			for(int i=strlen(final_value);i<300;i++){
 				strcat(final_value," ");
 			}
 			for(int i=0;i<300;i++){
-				if(final_value[i]!=" "){
+				if(final_value[i]!=' '){
 					printf("%c",final_value[i]);
 				}
 			}
@@ -579,9 +581,8 @@ int main(int argc, char** argv){
 			}
 			int final_message_len = final_ciphertext_len+16;
 			// decrypted message is 300 characters long 
-			printf("DEBUG: Final encrypted message is %d characters long.\n",final_message_len);
+			// printf("DEBUG: Final encrypted message is %d characters long.\n",final_message_len);
 			bank_send(b, final_message, final_message_len);
-
 		}else{
 			printf("DEBUG: Operation was not valid- no state changes will be made.\n");
 		}
