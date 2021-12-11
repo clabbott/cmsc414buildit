@@ -543,14 +543,13 @@ int main(int argc, char** argv){
 
 	atm_send(atm, msg, msg_len);
 
-
-	unsigned char *encrypted_bank_msg = malloc(sizeof(char*)*300);
-	atm_recv(atm, encrypted_bank_msg, sizeof(encrypted_bank_msg));
-	printf("atm received message\n");
-	for(int i=0;i<300;i++){
-		printf("%c",encrypted_bank_msg[i]);
-	}
-	printf(")\n");
+	// unsigned char *encrypted_bank_msg = malloc(300*sizeof(char*));
+	// atm_recv(atm, encrypted_bank_msg, sizeof(encrypted_bank_msg));
+	// printf("atm received message\n");
+	// for(int i=0;i<300;i++){
+	// 	printf("%c",encrypted_bank_msg[i]);
+	// }
+	// printf(")\n");
 
 
 

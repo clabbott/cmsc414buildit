@@ -259,7 +259,7 @@ int main(int argc, char** argv){
 
 		/* okay, connected to bank/atm. Send/recv messages to/from the bank/atm. */
 		char buffer[1024];
-		char ret_buffer[1024];
+		
 		bank_recv(b, buffer, sizeof(buffer));
 
 		
@@ -377,7 +377,6 @@ int main(int argc, char** argv){
 					ull val = (ull) atoi(sent_value_of_operation);
 					if ((val + found->account_balance) < LLONG_MAX) {
 						found->account_balance += val;
-						strcpy(ret_buffer, "But something happened!");
 						printLinkedList();
 					} else {
 						printf("ERROR -- Max account limit exceeded -- please withdraw some funds\n");
@@ -438,29 +437,32 @@ int main(int argc, char** argv){
 
 		// msg asking for modified echo here
 		if(is_valid==1){
-			strcpy(ret_buffer, "Your transaction was valid! Verify by repeating this message appended with your card.");
+			// strcpy(ret_buffer, "Your transaction was valid! Verify by repeating this message appended with your card.");
 		}else{
-			strcpy(ret_buffer, "Your transaction was invalid. Terminating connection.");
+			// strcpy(ret_buffer, "Your transaction was invalid. Terminating connection.");
 		}
 
 		// encrypt here 
-		unsigned char *ciphertext = malloc(300*sizeof(char*));
-		size_t iv_len = 16;
+		// unsigned char *ciphertext = malloc(300*sizeof(char*));
+		// size_t iv_len = 16;
+		// unsigned char *rand_bytes = malloc(65*sizeof(char*));
+		// RAND_bytes(rand_bytes,64);
+		// // unsigned *char ret_buffer[1024];
 
-		int ciphertext_len = sym_encrypt(ret_buffer, strlen((char*)ret_buffer),sym_key,iv,ciphertext);
+		// int ciphertext_len = sym_encrypt(rand_bytes,64,sym_key,iv,ciphertext);
 
-		printf("DEBUG: Preparing to send message size %d containing:\n(",ciphertext_len);
-		for(int i=0;i<ciphertext_len;i++){
-			printf("%c",ciphertext[i]);
-		}
-		printf(" msg)\n");
+		// printf("DEBUG: Preparing to send message size %d containing:\n(",ciphertext_len);
+		// for(int i=0;i<ciphertext_len;i++){
+		// 	printf("%c",ciphertext[i]);
+		// }
+		// printf(" msg)\n");
 
-		bank_send(b, ciphertext, ciphertext_len);
-		if(is_valid==0){
-			/* when finished processing commands ...*/
-			close(b->clientfd);
-			b->clientfd = -1;
-		}
+		// bank_send(b, ciphertext, ciphertext_len);
+		// if(is_valid==0){
+		// 	/* when finished processing commands ...*/
+		// 	close(b->clientfd);
+		// 	b->clientfd = -1;
+		// }
 
 		// char resp2_buffer[1024];
 		// bank_recv(b, resp2_buffer, sizeof(resp2_buffer));
