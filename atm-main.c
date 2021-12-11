@@ -225,6 +225,15 @@ int main(int argc, char** argv){
 				recval_locs[3] = -1-i;
 			}
 			i+=1;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='a'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			if(recval_locs[4]!=-1){
+				printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				exit(255);
+			}else{
+				recval_locs[4] = -1-i;
+			}
+			i+=1;
 		}else{
 			printf("DEBUG: Argument at %d was invalid. Value is %s\n",i,argv[i]);
 			exit(255);
@@ -272,6 +281,13 @@ int main(int argc, char** argv){
 	}
 	char account[123];
 	memset(account,'\0',sizeof(account));
+	if(recval_locs[4]<-1){
+		port_num = atoi(&(argv[(recval_locs[2]+1)*-1][2]));
+	}else{
+		port_num = (recval_locs[2]==-1 ? 3000 : atoi(argv[recval_locs[2]+1]));
+	} 
+	printf("DEBUG: port num is %d\n",port_num);
+
 	strncpy(account,argv[recval_locs[4]+1],122);
 	printf("DEBUG: account name is %d characters long, need to pad %d characters of space to the end.\n",strlen(account),122-strlen(account));
 	char natural_card_buff[128]; // holds the value of the natural card associated with this account if needed later
