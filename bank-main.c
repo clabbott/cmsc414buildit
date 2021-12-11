@@ -436,9 +436,9 @@ int main(int argc, char** argv){
 
 		// msg asking for modified echo here
 		if(is_valid==1){
-			// strcpy(ret_buffer, "Your transaction was valid! Verify by repeating this message appended with your card.");
+			// do nothing
 		}else{
-			// strcpy(ret_buffer, "Your transaction was invalid. Terminating connection.");
+			// close the connection TODO
 		}
 		/* Buffer message format:
 		0 account name (122 characters)
@@ -529,13 +529,30 @@ int main(int argc, char** argv){
 	printf(" acct\n");
 	for(int i=122;i<122+32;i++){
 		printf("%c",decrypted_msg_rec2[i]);
+		if(card_rand_bytes[i-122]!=decrypted_msg_rec2[i]){
+			printf("\n %c != %c\n",card_rand_bytes[i-122],decrypted_msg_rec2[i]);
+			// TODO close connection
+		}
 	}
 	printf(" val\n");
+
 	
+	struct linked_list_node *found = find_account(sent_account);
+	if(found==NULL){
+		// TODO close connection
+	}
 	for(int i=122+32;i<122+32+32;i++){
 		printf("%c",decrypted_msg_rec2[i]);
+		if(found->card_info[i-(122+32)]!=decrypted_msg_rec2[i]){
+			printf("\n %c != %c\n",found->card_info[i-(122+32)],decrypted_msg_rec2[i]);
+			// TODO close connection
+		}
 	}
 	printf(" card\n");
+
+
+	// Verified that this is not a repeat attack
+
 	
 		// encrypt here 
 		// unsigned char *ciphertext = malloc(300*sizeof(char*));
