@@ -514,6 +514,16 @@ int main(int argc, char** argv){
 	printf(" msg)\n");
 	bank_send(b, msg_resp, msg_resp_len);
 
+	char buffer_rec2[1024];
+	bank_recv(b, buffer_rec2, sizeof(buffer_rec2));
+	for(int i=0;i<208;i++){
+		printf("%c",buffer_rec2[i]);
+	}
+	printf(" msg");
+	unsigned char decrypted_msg_rec2[300];
+	int decrypted_length_rec2 = sym_decrypt(buffer_rec2,208,sym_key,iv,decrypted_msg_rec2);
+	
+	
 		// encrypt here 
 		// unsigned char *ciphertext = malloc(300*sizeof(char*));
 		// size_t iv_len = 16;

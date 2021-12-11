@@ -594,6 +594,13 @@ int main(int argc, char** argv){
 		decrypted_msg[i] = card_file_buffer[i];
 	}
 
+	unsigned char *ciphertext_resp2 = malloc(300*sizeof(char*));
+
+	int ciphertext_len_resp2 = sym_encrypt(decrypted_msg, decrypted_length+32,auth_file_buffer,iv,ciphertext_resp2);
+
+	printf("DEBUG: Preparing to send message size %d:\n(",ciphertext_len_resp2);
+	atm_send(atm, ciphertext_resp2, ciphertext_len_resp2);
+	
 
 
 	// char resp2_buffer[1024];
