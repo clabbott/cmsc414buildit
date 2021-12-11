@@ -469,15 +469,17 @@ int main(int argc, char** argv){
 		buffer_resp[buffer_idx_resp++] = card_rand_bytes[i];
 	}
 	// placeholder value
-	for(int i=0;i<strlen("X");i++){
-		buffer_resp[buffer_idx_resp++] = 'X';
-	}
+	// for(int i=0;i<strlen("X");i++){
+	// 	buffer_resp[buffer_idx_resp++] = 'X';
+	// }
+	// 1 char
 
-	printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
-	strcat(buffer_resp,operation_value);
-	for(int i=0;i<strlen(operation_value);i++){
-		buffer_resp[buffer_idx_resp++] = operation_value[i];
-	}
+	// printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
+	// strcat(buffer_resp,operation_value);
+	// for(int i=0;i<strlen(operation_value);i++){
+	// 	buffer_resp[buffer_idx_resp++] = operation_value[i];
+	// }
+	// 13 chars
 
 	printf("DEBUG: Printing entire message:(\n");
 	for(int i=0;i<buffer_idx_resp;i++){

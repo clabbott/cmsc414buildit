@@ -566,18 +566,27 @@ int main(int argc, char** argv){
 		iv_resp[i] = buffer_resp[i];
 	}
 	printf(" iv\n");
-	for(int i=16;i<192;i++){
+	for(int i=16;i<16+122;i++){
 		printf("%c",buffer_resp[i]);
 		encrypted_msg[i-16] = buffer_resp[i];
 	}
-	printf(" msg)\n");
+	printf(" acct name)\n");
+	for(int i=16+122;i<16+122+32;i++){
+		printf("%c",buffer_resp[i]);
+		encrypted_msg[i-16] = buffer_resp[i];
+	}
+	printf(" randbytes)\n");
 	// unsigned char auth_file_buffer[32]; is declared above
-	int decrypted_length = sym_decrypt(encrypted_msg,192-16,auth_file_buffer,iv_resp,decrypted_msg);
+	int decrypted_length = sym_decrypt(encrypted_msg,16+122+32,auth_file_buffer,iv_resp,decrypted_msg);
 	printf("DEBUG: length of decrypted message is %d.\nMessage is:(\n",decrypted_length);
-	for(int i=0;i<decrypted_length+9;i++){
+	for(int i=0;i<122;i++){
 		printf("%c",decrypted_msg[i]);
 	}
-	printf(")\n");
+	printf(" acct\n");
+	for(int i=122;i<122+32;i++){
+		printf("%c",decrypted_msg[i]);
+	}
+	printf(" val\n");
 		
 
 	// decrypt here 
