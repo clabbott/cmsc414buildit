@@ -514,14 +514,22 @@ int main(int argc, char** argv){
 
 	atm_send(atm, msg, msg_len);
 
-	// atm_send(atm, buffer, sizeof(buffer));
 	atm_recv(atm, buffer, sizeof(buffer));
 
 
 	// decrypt here 
 
-
 	printf("atm received %s\n", buffer);
+	char resp2_buffer[1024];
+
+	// encrypt here
+
+	atm_send(atm, msg, msg_len);
+
+	// decrypt here
+
+
+	atm_recv(atm, buffer, sizeof(buffer));
 	
 	atm_free(atm);
 	

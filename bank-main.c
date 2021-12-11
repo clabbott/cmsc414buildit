@@ -10,6 +10,42 @@
 
 // Default port and ip address are defined here
 
+int sym_encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key, unsigned char *iv, unsigned char *ciphertext){
+	EVP_CIPHER_CTX *ctx;
+	int len;
+	int ciphertext_len;
+
+	// creat and init context
+	if(!(ctx = EVP_CIPHER_CTX_new())){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 16\n");
+		exit(255);
+	}
+
+	// init encryption operation 
+	if(1!= EVP_EncryptInit_ex(ctx,EVP_aes_256_cbc(),NULL,key,iv)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 22\n");
+		exit(255);
+	}
+
+	// provide message to be encrypted/ get output
+	if(1!= EVP_EncryptUpdate(ctx,ciphertext,&len,plaintext,plaintext_len)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
+		exit(255);
+	}
+	ciphertext_len = len;
+
+	// finalize the encryption 
+	if(1!=EVP_EncryptFinal_ex(ctx,ciphertext+len,&len)){
+		printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
+		exit(255);
+	}
+	ciphertext_len += len;
+
+	// clean up and return 
+	EVP_CIPHER_CTX_free(ctx);
+	return ciphertext_len;
+}
+
 int sym_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, unsigned char *iv, unsigned char *plaintext){
 	EVP_CIPHER_CTX *ctx;
 	int len;
@@ -304,7 +340,6 @@ int main(int argc, char** argv){
 		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
 		// printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
 
-		// TODO implement anti-repeat attack value 
 		
 		// do some validation ?
 		// TODO validation
@@ -313,14 +348,14 @@ int main(int argc, char** argv){
 
 		// TODO: Check if the card for the user validates 
 		// TODO: Implement a system to check 
+		int is_valid = 1;
 		if('n'==sent_mode_of_operation[0]){
 			printf("DEBUG: The atm wants to make a new account.\n");
 			if(find_account(sent_account)!=NULL){
 				printf("DEBUG: That account for '%s' already exists!\n",sent_account);
-				strcpy(ret_buffer, "But nothing happened.");
+				is_valid = 0;
 			}else{
 				insert(sent_account,sent_value_of_operation,sent_card_value);
-				strcpy(ret_buffer, "But something happened!");
 				printLinkedList();
 			}
 		}else if('d'==sent_mode_of_operation[0]){
@@ -328,7 +363,7 @@ int main(int argc, char** argv){
 			struct linked_list_node *found = find_account(sent_account);
 			if(found==NULL){
 				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
-				strcpy(ret_buffer, "But nothing happened.");
+				is_valid = 0;
 			}else{
 				// check if card is valid
 				int valid = 1;
@@ -349,7 +384,7 @@ int main(int argc, char** argv){
 					}
 				}else{
 					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
-					strcpy(ret_buffer, "But nothing happened.");
+					is_valid = 0;
 				}
 			}
 		}else if('w'==sent_mode_of_operation[0]){
@@ -357,7 +392,7 @@ int main(int argc, char** argv){
 			struct linked_list_node *found = find_account(sent_account);
 			if(found==NULL){
 				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
-				strcpy(ret_buffer, "But nothing happened.");
+				is_valid = 0;
 			}else{
 				// check if card is valid
 				int valid = 1;
@@ -368,11 +403,10 @@ int main(int argc, char** argv){
 				}
 				if(valid == 1){
 					printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-					strcpy(ret_buffer, "But something happened!");
 					printLinkedList();
 				}else{
 					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
-					strcpy(ret_buffer, "But nothing happened.");
+					is_valid = 0;
 				}
 			}
 		}else if('g'==sent_mode_of_operation[0]){
@@ -380,7 +414,7 @@ int main(int argc, char** argv){
 			struct linked_list_node *found = find_account(sent_account);
 			if(found==NULL){
 				printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
-				strcpy(ret_buffer, "But nothing happened.");
+				is_valid = 0;
 			}else{
 				// check if card is valid
 				int valid = 1;
@@ -391,22 +425,71 @@ int main(int argc, char** argv){
 				}
 				if(valid == 1){
 					printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-					strcpy(ret_buffer, "But something happened!");
 					printLinkedList();
 				}else{
 					printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
-					strcpy(ret_buffer, "But nothing happened.");
+					is_valid = 0;
 				}
 			}
 		}else{
 			printf("DEBUG: The atm sent an invalid mode of operation: '%c'.\n",sent_mode_of_operation[0]);
-			strcpy(ret_buffer, "But nothing happened.");
+			is_valid = 0;
 		}
 
-		// encrypt here
+		// msg asking for modified echo here
+		if(is_valid==1){
+			strcpy(ret_buffer, "Your transaction was valid! Verify by repeating this message appended with your card.");
+		}else{
+			strcpy(ret_buffer, "Your transaction was invalid. Terminating connection.");
+		}
 
-		
+		// encrypt here 
+		unsigned char *ciphertext = malloc(300*sizeof(char*));
+		size_t iv_len = 16;
+
+		int ciphertext_len = sym_encrypt(ret_buffer, strlen((char*)ret_buffer),sym_key,iv,ciphertext);
+
+		printf("DEBUG: Preparing to send message size %d containing:\n(",ciphertext_len);
+		for(int i=0;i<ciphertext_len;i++){
+			printf("%c",ciphertext[i]);
+		}
+		printf(" msg)\n");
+
 		bank_send(b, ret_buffer, strlen(ret_buffer)+1);
+		if(is_valid==0){
+			/* when finished processing commands ...*/
+			close(b->clientfd);
+			b->clientfd = -1;
+		}
+
+		// char resp2_buffer[1024];
+		// bank_recv(b, resp2_buffer, sizeof(resp2_buffer));
+
+		// printf("DEBUG: Received message containing:\n(");
+		// for(int i=0;i<16;i++){
+		// 	printf("%c",resp2_buffer[i]);
+		// 	iv[i] = resp2_buffer[i];
+		// }
+		// printf(" iv\n");
+		// for(int i=16;i<192;i++){
+		// 	printf("%c",buffer[i]);
+		// 	encrypted_msg[i-16] = buffer[i];
+		// }
+
+		// decrypt here
+		// int decrypted_length = sym_decrypt(encrypted_msg,192-16,sym_key,iv,decrypted_msg);
+		// printf("DEBUG: length of decrypted message is %d.\nMessage is:(\n",decrypted_length);
+		// for(int i=0;i<decrypted_length+9;i++){
+		// 	printf("%c",decrypted_msg[i]);
+		// }
+		// printf(")\n");
+
+		// see if it matches what we are supposed to see
+
+		// char final_msg_buffer[1024];
+		// encrypt here
+		
+		// bank_send(b, ret_buffer, strlen(ret_buffer)+1);
 
 
 		/* when finished processing commands ...*/
