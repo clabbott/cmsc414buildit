@@ -578,7 +578,7 @@ int main(int argc, char** argv){
 	printf(" randbytes)\n");
 	// unsigned char auth_file_buffer[32]; is declared above
 	int decrypted_length = sym_decrypt(encrypted_msg,16+122+32,auth_file_buffer,iv_resp,decrypted_msg);
-	printf("DEBUG: length of decrypted message is %d.\nMessage is:(\n",decrypted_length);
+	printf("DEBUG: length of decrypted message is %d. Message is:(\n",decrypted_length);
 	for(int i=0;i<122;i++){
 		printf("%c",decrypted_msg[i]);
 	}
@@ -593,6 +593,21 @@ int main(int argc, char** argv){
 	for(int i=122+32;i<122+32+32;i++){
 		decrypted_msg[i] = card_file_buffer[i];
 	}
+
+	printf("DEBUG: Plaintext of next message is:(\n");
+	printf("DEBUG: length of decrypted message is %d. Message is:(\n",decrypted_length+32);
+	for(int i=0;i<122;i++){
+		printf("%c",decrypted_msg[i]);
+	}
+	printf(" acct\n");
+	for(int i=122;i<122+32;i++){
+		printf("%c",decrypted_msg[i]);
+	}
+	printf(" val\n");
+	for(int i=122+32;i<122+32+32;i++){
+		printf("%c",decrypted_msg[i]);
+	}
+	printf(" card\n");
 
 	unsigned char *ciphertext_resp2 = malloc(300*sizeof(char*));
 
