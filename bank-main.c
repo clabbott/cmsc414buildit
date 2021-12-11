@@ -137,6 +137,24 @@ int main(int argc, char** argv){
 				recval_locs[1] = i;
 			}
 			i+=2;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='p'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			if(recval_locs[0]!=-1){
+				printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				exit(255);
+			}else{
+				recval_locs[0] = -1-i;
+			}
+			i+=1;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='s'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			if(recval_locs[1]!=-1){
+				printf("DEBUG: Duplicate %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				exit(255);
+			}else{
+				recval_locs[1] = -1-i;
+			}
+			i+=1;
 		}else{
 			printf("DEBUG: Argument at %d was invalid. Value is %s\n",i,argv[i]);
 			exit(255);
@@ -146,101 +164,26 @@ int main(int argc, char** argv){
 	int port_num;
 	unsigned short port;
 	if(recval_locs[0]<-1){
-		port_num = atoi(argv[(recval_locs[0]+1)*-1][2]);
+		printf("Preparing to look for port at %d\n",(recval_locs[0]+1)*-1);
+		port_num = atoi(&(argv[(recval_locs[0]+1)*-1][2]));
 	}else{
 		port_num = (recval_locs[0]==-1 ? 3000 : atoi(argv[recval_locs[0]+1]));
 	} 
 	port = (unsigned short)port_num;
 
-
 	char *auth_file_name;
 	if(recval_locs[1]<-1){
+		printf("Preparing to look for authfile at %d\n",(recval_locs[1]+1)*-1);
 		auth_file_name = &(argv[(recval_locs[1]+1)*-1][2]);
 	}else{
 		auth_file_name = (recval_locs[1]==-1 ? "bank.auth" : argv[recval_locs[1]+1]);
-	} 
-
+	}
 	
 	unsigned char sym_key[32];
 
 	// print the values that we learned 
 	printf("DEBUG: The port, as entered, is %d\n",(int)port);
 	printf("DEBUG: The auth file is %s\n",auth_file_name);
-
-	// Checks to make sure the parameters are valid 
-	// if(argc!=1 && argc!=3 && argc!=5){
-	// 	printf("DEBUG: wrong number of arguments: expected val in {1,3,5} but recieved %d\n",argc);
-	// 	exit(255);
-	// }else{
-	// 	if(argc==1){
-	// 		// no validation necessary
-	// 	}else if(argc==3){
-	// 		// validation of argv[1] and argv[2] necessary
-	// 		if(strcmp(argv[1],"-p")!=0 && strcmp(argv[1],"-s")!=0){
-	// 			printf("DEBUG: second argument was an unexpected value: %s\n",argv[1]);
-	// 			exit(255);
-	// 		}
-	// 		if(strcmp(argv[1],"-p")==0){
-	// 			// port argument recognized
-	// 			int port_num = atoi(argv[2]);
-	// 			if(port_num<1024||port_num>65535){
-	// 				printf("DEBUG: port argument was an unexpected value: %s\n",argv[2]);
-	// 				exit(255);
-	// 			}
-	// 			port = (unsigned short)port_num;
-	// 		}else{
-	// 			// specific auth file detected
-	// 			auth_pos = 2;
-	// 		}
-	// 	}else {
-	// 		// validation of argv[1-4] necessary
-	// 		if(strcmp(argv[1],"-p")!=0 && strcmp(argv[1],"-s")!=0){
-	// 			printf("DEBUG: second argument was an unexpected value: %s\n",argv[1]);
-	// 			exit(255);
-	// 		}
-	// 		if(strcmp(argv[3],"-p")!=0 && strcmp(argv[3],"-s")!=0){
-	// 			printf("DEBUG: fourth argument was an unexpected value: %s\n",argv[3]);
-	// 			exit(255);
-	// 		}
-
-	// 		// validate argv[1] and argv[2]
-	// 		int first_was_port = 0; // 1 if the first argument was a port argument
-	// 		if(strcmp(argv[1],"-p")==0){
-	// 			// port argument recognized
-	// 			first_was_port = 1;
-	// 			int port_num = atoi(argv[2]);
-	// 			if(port_num<1024||port_num>65535){
-	// 				printf("DEBUG: port argument was an unexpected value: %s\n",argv[2]);
-	// 				exit(255);
-	// 			}
-	// 			port = (unsigned short)port_num;
-	// 		}else{
-	// 			// specific auth file detected
-	// 			auth_pos = 2;}
-	// 		// validate argv[3] and argv[4]
-	// 		if(strcmp(argv[3],"-p")==0){
-	// 			// port argument recognized
-	// 			if(first_was_port==1){
-	// 				printf("DEBUG: argv[3] was interpreted as a second port argument: %s\n",argv[3]);
-	// 				exit(255);
-	// 			}
-	// 			int port_num = atoi(argv[4]);
-	// 			if(port_num<1024||port_num>65535){
-	// 				printf("DEBUG: port argument was an unexpected value: %s\n",argv[4]);
-	// 				exit(255);
-	// 			}
-	// 			port = (unsigned short)port_num;
-	// 		}else{
-	// 			// specific auth file detected
-	// 			if(first_was_port==0){
-	// 				printf("DEBUG: argv[3] was interpreted as a second auth argument: %s\n",argv[3]);
-	// 				exit(255);
-	// 			}
-	// 			auth_pos = 4;}}
-	// }
-	
-	
-
 
 	/* no error checking is done on any of this. may need to modify this */
 	
