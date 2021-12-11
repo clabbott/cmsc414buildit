@@ -615,7 +615,30 @@ int main(int argc, char** argv){
 	// printf("DEBUG: Preparing to send message size %d:\n(",ciphertext_len_resp2);
 	atm_send(atm, ciphertext_resp2, ciphertext_len_resp2);
 	
+	char final_buffer_resp[330];
+	/* okay, connected to bank/atm. Send/recv messages to/from the bank/atm. */
+	atm_recv(atm, final_buffer_resp, sizeof(final_buffer_resp));
 
+	unsigned char final_encrypted_msg[330];
+	// printf("DEBUG: Received message containing:\n(");
+	for(int i=0;i<16;i++){
+		printf("%c",final_buffer_resp[i]);
+	}
+	printf(" iv\n");
+	for(int i=16;i<320;i++){
+		printf("%c",final_buffer_resp[i]);
+		final_encrypted_msg[i-16] = final_buffer_resp[i];
+	}
+	printf(" enc msg\n");
+
+	unsigned char final_decrypted_msg[330];
+	int final_decrypted_length = sym_decrypt(final_encrypted_msg,320-16,auth_file_buffer,iv_resp,final_decrypted_msg);
+
+	printf("DEBUG: Final length of decrypted msg is %d, contents:\n",final_decrypted_length);
+	for(int i=0;i<final_decrypted_length;i++){
+		printf("%c",final_decrypted_msg[i]);
+	}
+	printf(" msg\n");
 
 	// char resp2_buffer[1024];
 

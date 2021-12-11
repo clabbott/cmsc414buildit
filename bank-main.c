@@ -546,51 +546,41 @@ int main(int argc, char** argv){
 			printf("DEBUG: Everything so far is valid- changes to state are now going to be made and returned.\n");
 
 			// MATTHEW TODO MAKE CHANGES TO BANK STATE HERE- EVERYHTING IS VERIFIED NOW
-			
+			char final_value[300] = "testing\0";
 
-			// printf("DEBUG: Preparing to send message size %d containing:\n(",msg_resp_len);
-			// for(int i=0;i<16;i++){
-			// 	printf("%c",msg_resp[i]);
-			// }
-			// printf(" iv\n");
-			// for(int i=16;i<msg_resp_len;i++){
-			// 	printf("%c",msg_resp[i]);
-			// }
-			// printf(" msg)\n");
 			
-			char operation_value[14];
-			memset(operation_value,'\0',sizeof(operation_value));
-			for(int i=strlen(operation_value);i<13;i++){
-				strcat(operation_value," ");
+			// CHANGES ARE DONE BEING MADE HERE
+			// NOW PRINTING FINAL VALUE FOR BANK
+			for(int i=strlen(final_value);i<300;i++){
+				strcat(final_value," ");
 			}
+			for(int i=0;i<300;i++){
+				if(final_value[i]!=" "){
+					printf("%c",final_value[i]);
+				}
+			}
+			printf("\n");
 
-			int buffer_idx_resp = 0;
-			// always 122 characters
-			for(int i=0;i<122;i++){
-				buffer_resp[buffer_idx_resp++] = sent_account[i];
-			}
+			// always 300 characters
 			unsigned char final_buffer_resp[300] = "";
+			for(int i=0;i<300;i++){
+				final_buffer_resp[i] = final_value[i];
+			}
 
-			unsigned char final_ciphertext[300];
-			int final_ciphertext_len = sym_encrypt(buffer_resp, strlen((char*)buffer_resp),sym_key,iv,ciphertext);
+			unsigned char final_ciphertext[500];
+			int final_ciphertext_len = sym_encrypt(final_buffer_resp, 300 ,sym_key,iv,final_ciphertext);
 
-			unsigned char final_message[300];
+			unsigned char final_message[600];
 			for(int i=0;i<16;i++){
 				final_message[i] = iv[i];
 			}
 			for(int i=16;i<16+final_ciphertext_len;i++){
 				final_message[i] = final_ciphertext[i-16];
 			}
-			int final_message_len = ciphertext_len+16;
+			int final_message_len = final_ciphertext_len+16;
+			// decrypted message is 300 characters long 
+			printf("DEBUG: Final encrypted message is %d characters long.\n",final_message_len);
 			bank_send(b, final_message, final_message_len);
-
-			bank_send(b, msg_resp, msg_resp_len);
-			
-
-				// char final_msg_buffer[1024];
-				// encrypt here
-				
-				// bank_send(b, ret_buffer, strlen(ret_buffer)+1);
 
 		}else{
 			printf("DEBUG: Operation was not valid- no state changes will be made.\n");
