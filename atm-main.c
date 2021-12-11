@@ -234,6 +234,41 @@ int main(int argc, char** argv){
 				recval_locs[4] = -1-i;
 			}
 			i+=1;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='n'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			if(mode_of_operation!=-1){
+				printf("DEBUG: Duplicate mode of operation %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				exit(255);
+			}else{
+				mode_of_operation = 0;
+				recval_locs[5] = -1-i;
+			}
+			i+=1;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='d'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			if(mode_of_operation!=-1){
+				printf("DEBUG: Duplicate mode of operation %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				exit(255);
+			}else{
+				mode_of_operation = 1;
+				recval_locs[5] = -1-i;
+			}
+			i+=1;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='w'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			if(mode_of_operation!=-1){
+				printf("DEBUG: Duplicate mode of operation %c argument detected at %d with %s value.\n",argv[i][1],i,"TODO");
+				exit(255);
+			}else{
+				mode_of_operation = 2;
+				recval_locs[5] = -1-i;
+			}
+			i+=1;
+		}else if(strlen(argv[i])>2&&argv[i][0]=='-'&&argv[i][1]=='g'){
+			printf("DEBUG: %c argument at %d was a nospace attempt.\n",argv[i][1],i);
+			printf("DEBUG: -g has no valid arguments but was provided with one. TODO implement according to guideline 5.\n");
+			// implement guideline 5 here
+			exit(255);
 		}else{
 			printf("DEBUG: Argument at %d was invalid. Value is %s\n",i,argv[i]);
 			exit(255);
@@ -309,7 +344,11 @@ int main(int argc, char** argv){
 	}
 	char operation_value[14];
 	memset(operation_value,'\0',sizeof(operation_value));
-	strncpy(operation_value,(mode_of_operation==3 ? "0.00" : (argv[recval_locs[5]+1])),13);
+	if(recval_locs[5]<-1){
+		strncpy(operation_value,&(argv[(recval_locs[5]+1)*-1][2]),13);
+	}else{
+		strncpy(operation_value,(mode_of_operation==3 ? "0.00" : (argv[recval_locs[5]+1])),13);
+	}
 	printf("DEBUG: operation_value is %d characters long, need to pad %d characters of space to the end.\n",strlen(operation_value),13-strlen(operation_value));
 	for(int i=strlen(operation_value);i<13;i++){
 		strcat(operation_value," ");
