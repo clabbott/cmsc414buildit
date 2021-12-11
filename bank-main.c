@@ -108,9 +108,46 @@ struct linked_list_node* find_account(char  *account){
 int main(int argc, char** argv){
 	unsigned short port = 3000;
 	char *ip = "127.0.0.1";
-	int i;
+	int i = 1;
 	FILE *file;
 	int auth_pos = -1; // returns the location in argv of an auth file. If not specified, it is -1.
+
+	int recval_locs[] = {-1,-1};
+	while(i<argc){
+		if(strcmp(argv[i],"-p")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			if(recval_locs[0]!=-1){
+				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
+				exit(255);
+			}else{
+				recval_locs[0] = i;
+			}
+			i+=2;
+		}else if(strcmp(argv[i],"-i")==0){
+			printf("DEBUG: %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+			if(recval_locs[1]!=-1){
+				printf("DEBUG: Duplicate %s argument detected at %d with %s value\n",argv[i],i,argv[i+1]);
+				exit(255);
+			}else if(i+1>=argc){
+				printf("DEBUG: Argument %s detected at %d has no value\n",argv[i],i);
+				exit(255);
+			}else{
+				recval_locs[1] = i;
+			}
+			i+=2;
+		}else{
+
+		}
+	}
+
+	if(recval_locs[0]<-1){
+		auth_file_name = &(argv[(recval_locs[0]+1)*-1][2]);
+	}else{
+		auth_file_name = (recval_locs[0]==-1 ? "bank.auth" : argv[recval_locs[0]+1]);
+	} 
 
 	// Checks to make sure the parameters are valid 
 	if(argc!=1 && argc!=3 && argc!=5){
