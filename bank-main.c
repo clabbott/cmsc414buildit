@@ -348,6 +348,7 @@ int main(int argc, char** argv){
 		// TODO: Check if the card for the user validates 
 		// TODO: Implement a system to check 
 		int is_valid = 1;
+		struct linked_list_node *acc;
 		if('n'==sent_mode_of_operation[0]){
 			// printf("DEBUG: The atm wants to make a new account.\n");
 			if(find_account(sent_account)!=NULL){
@@ -372,6 +373,7 @@ int main(int argc, char** argv){
 					}
 				}
 				if(valid == 1){
+					acc = found;
 					// printf("DEBUG: Changing found's values..... matthew started this hopefully its finished and/or working.....\n");
 					// TODO move this operation to later until the atm has passed the repeat attack check
 					ull val = (ull) atoi(sent_value_of_operation);
@@ -380,6 +382,7 @@ int main(int argc, char** argv){
 						//printLinkedList();
 					} else {
 						printf("ERROR -- Max account limit exceeded -- please withdraw some funds\n");
+						is_valid = 0;
 					}
 				}else{
 					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
@@ -401,7 +404,14 @@ int main(int argc, char** argv){
 					}
 				}
 				if(valid == 1){
+					acc = found;
 					// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+					ull val = (ull) atoi(sent_value_of_operation);
+					if ((found->account_balance - val) >= 0) {
+						found->account_balance -= val;
+					} else {
+						is_valid = 0;
+					}
 					//printLinkedList();
 				}else{
 					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
@@ -423,7 +433,9 @@ int main(int argc, char** argv){
 					}
 				}
 				if(valid == 1){
+					acc = found;
 					// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+					printf("Account for %s has %u funds\n", found->account, found->account_balance);
 					//printLinkedList();
 				}else{
 					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
@@ -547,8 +559,15 @@ int main(int argc, char** argv){
 			
 
 			// MATTHEW TODO MAKE CHANGES TO BANK STATE HERE- EVERYHTING IS VERIFIED NOW
+			// Am going to finish this tomorrow -- want to parse this string to be accurate to last transaction
+			// Shouldn't be too tough
 			char final_value[300] = "\"account\":\"bob\",\"initial_balance\":\"10.00\"\0";
-
+			// char final_value[300] = acc->account;
+			// char bal[20];
+			// strcat(final_value, "\"balance\":");
+			// sprintf(bal, "%u", acc->account_balance);
+			// strcat(final_value, bal);
+			// strcat(final_value, "\"\0");
 
 			printLinkedList();
 			// CHANGES ARE DONE BEING MADE HERE

@@ -9,3 +9,6 @@
     Basic functionality works but I can make it better (decimals are messed up rn)
 11:45pm 12/10 Clark- Did the arg parsing fixes and started the repeat attack protection
 4:23pm 12/11 Clark- Finished repeat attack protection.
+2:34am 12/12 Matthew -- Finished behavior for different commands in bank-main.c. Can confirm it works by output of
+    printLinkedList(), but still need to work on the final_value string being accurate to the last transaction made. this 
+    shouldn't be too tough tho. I'll go back and wrap that up either tomorrow or monday
