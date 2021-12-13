@@ -12,3 +12,5 @@
 2:34am 12/12 Matthew -- Finished behavior for different commands in bank-main.c. Can confirm it works by output of
     printLinkedList(), but still need to work on the final_value string being accurate to the last transaction made. this 
     shouldn't be too tough tho. I'll go back and wrap that up either tomorrow or monday
+2:15pm 12/13 Matthew -- Finished construction of output string for new accounts created -- TODO still need to Converting
+    sent_value_of_operation to cents instead of dollars and update everything for that accordingly
