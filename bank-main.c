@@ -335,7 +335,10 @@ int main(int argc, char** argv){
 		}
 		sent_value_of_operation[13] = '\0';
 		char *p = strchr(sent_value_of_operation, '.');
-		*(p) = '\0'; // MATTHEW I changed this from *p - 1 to *(p) because I was getting errors when I make clean and recompile it
+		// THIS GETS THE AMOUNT OF MONEY AS AN EXPRESSION OF CENTS -- WILL FINISH LATER
+		*(p) = *(p) + 1;
+		*(p) = *(p) + 2;
+		*(p + 3) = '\0'; // MATTHEW I changed this from *p - 1 to *(p) because I was getting errors when I make clean and recompile it
 		// printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
 		// printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
 
@@ -349,6 +352,7 @@ int main(int argc, char** argv){
 		// TODO: Implement a system to check 
 		int is_valid = 1;
 		struct linked_list_node *acc;
+		char final_value[300] = "\"account\":\"";
 		if('n'==sent_mode_of_operation[0]){
 			// printf("DEBUG: The atm wants to make a new account.\n");
 			if(find_account(sent_account)!=NULL){
@@ -356,6 +360,9 @@ int main(int argc, char** argv){
 				is_valid = 0;
 			}else{
 				insert(sent_account,sent_value_of_operation,sent_card_value);
+				strcat(final_value, sent_account);
+				strcat(final_value, "\", \"initial_balance\":");
+				strcat(final_value, sent_value_of_operation);
 				//printLinkedList();
 			}
 		}else if('d'==sent_mode_of_operation[0]){
@@ -561,7 +568,7 @@ int main(int argc, char** argv){
 			// MATTHEW TODO MAKE CHANGES TO BANK STATE HERE- EVERYHTING IS VERIFIED NOW
 			// Am going to finish this tomorrow -- want to parse this string to be accurate to last transaction
 			// Shouldn't be too tough
-			char final_value[300] = "\"account\":\"bob\",\"initial_balance\":\"10.00\"\0";
+			//char final_value[300] = "\"account\":\"bob\",\"initial_balance\":\"10.00\"\0";
 			// char final_value[300] = acc->account;
 			// char bal[20];
 			// strcat(final_value, "\"balance\":");
