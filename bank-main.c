@@ -78,6 +78,7 @@ int sym_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *ke
 struct linked_list_node {
 	ull account_balance;
 	char *account; // key
+	// char *balance_str;
 	unsigned char *card_info;
 	struct linked_list_node *next;
 };
@@ -85,11 +86,32 @@ struct linked_list_node {
 struct linked_list_node *head = NULL;
 struct linked_list_node *curr = NULL;
 
+// Converts ull to string
+char * utoa(unsigned int n)
+{
+  char * res, buf[30]; // long enough for largest number
+  unsigned int i, counter = 0;
+
+  if (n == 0)
+    buf[counter++] = '0';
+
+  for ( ; n; n /= 10)
+    buf[counter++] = "0123456789"[n%10];
+
+  res = malloc(counter);
+
+  for (i = 0; i < counter; ++i)
+    res[i] = buf[counter - i - 1];
+  res[i] = '\0';
+  return res;
+}
+
 void insert(char *account,char *account_balance,unsigned char *card_info){
 	int neg_check = atoi(account_balance);
+	printf("DEBUG: Received initial bal %s\n", account_balance);
 	if (neg_check < 0) {
 		printf("ERROR: Please deposit a positive number\n");
-		return;
+		exit(255);
 	}
 	ull bal = (ull) atoi(account_balance);
 	if (bal >= 4294967295.99) {
@@ -101,6 +123,7 @@ void insert(char *account,char *account_balance,unsigned char *card_info){
 	new_node->account = malloc(strlen(account)+1);
 	// memset(new_node->account,'\0',123);
 	strcpy(new_node->account,account);
+	// strcpy(new_node->balance_str, account_balance);
 
 	new_node->account_balance = (ull) 0;
 	// memset(new_node->account_balance,'\0',15);
@@ -119,7 +142,7 @@ void printLinkedList(){
 	printf("\n[ ");
 
 	while(curr != NULL){
-		printf("(account:%s,\n  account_balance:%u,\n  card_info:%s)\n",curr->account,curr->account_balance,curr->card_info);
+		printf("(account:%s,\n  account_balance:%u,\n  card_info:%s)\n",curr->account,curr->account_balance ,curr->card_info);
 		curr = curr->next;
 	}
 
@@ -336,10 +359,10 @@ int main(int argc, char** argv){
 		sent_value_of_operation[13] = '\0';
 		char *p = strchr(sent_value_of_operation, '.');
 		// THIS GETS THE AMOUNT OF MONEY AS AN EXPRESSION OF CENTS -- WILL FINISH LATER
-		*(p) = *(p) + 1;
-		*(p) = *(p) + 2;
-		*(p + 3) = '\0'; // MATTHEW I changed this from *p - 1 to *(p) because I was getting errors when I make clean and recompile it
-		// printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
+		*(p) = *(p + 1);
+		*(p + 1) = *(p + 2);
+		*(p + 2) = '\0';
+		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
 		// printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
 
 		
@@ -353,6 +376,7 @@ int main(int argc, char** argv){
 		int is_valid = 1;
 		struct linked_list_node *acc;
 		char final_value[300] = "\"account\":\"";
+		strcat(final_value, sent_account);
 		if('n'==sent_mode_of_operation[0]){
 			// printf("DEBUG: The atm wants to make a new account.\n");
 			if(find_account(sent_account)!=NULL){
@@ -360,9 +384,16 @@ int main(int argc, char** argv){
 				is_valid = 0;
 			}else{
 				insert(sent_account,sent_value_of_operation,sent_card_value);
-				strcat(final_value, sent_account);
+				ull val = (ull) atoi(sent_value_of_operation);
+				printf("DEBUG -- VAL = %s\n", utoa(val / 100));
 				strcat(final_value, "\", \"initial_balance\":");
-				strcat(final_value, sent_value_of_operation);
+				strcat(final_value, utoa(val / 100));
+				strcat(final_value, ".");
+				if (val % 100 != 0) {
+					strcat(final_value, utoa(val % (ull) 100));
+				} else {
+					strcat(final_value, "00");
+				}
 				//printLinkedList();
 			}
 		}else if('d'==sent_mode_of_operation[0]){
@@ -386,6 +417,14 @@ int main(int argc, char** argv){
 					ull val = (ull) atoi(sent_value_of_operation);
 					if ((val + found->account_balance) < LLONG_MAX) {
 						found->account_balance += val;
+						strcat(final_value, "\", \"deposit\":");
+						strcat(final_value, utoa(val / (ull) 100));
+						strcat(final_value, ".");
+						if (val % 100 != 0) {
+							strcat(final_value, utoa(val % (ull) 100));
+						} else {
+							strcat(final_value, "00");
+						}
 						//printLinkedList();
 					} else {
 						printf("ERROR -- Max account limit exceeded -- please withdraw some funds\n");
@@ -416,6 +455,14 @@ int main(int argc, char** argv){
 					ull val = (ull) atoi(sent_value_of_operation);
 					if ((found->account_balance - val) >= 0) {
 						found->account_balance -= val;
+						strcat(final_value, "\", \"withdrawal\":");
+						strcat(final_value, utoa(val / (ull) 100));
+						strcat(final_value, ".");
+						if (val % 100 != 0) {
+							strcat(final_value, utoa(val % (ull) 100));
+						} else {
+							strcat(final_value, "00");
+						}
 					} else {
 						is_valid = 0;
 					}
@@ -442,7 +489,16 @@ int main(int argc, char** argv){
 				if(valid == 1){
 					acc = found;
 					// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-					printf("Account for %s has %u funds\n", found->account, found->account_balance);
+					// printf("Account for %s has %u funds\n", found->account, found->account_balance);
+					ull val = (ull) atoi(found->account_balance);
+					strcat(final_value, "\", \"balance:\":");
+					strcat(final_value, utoa(val / (ull) 100));
+					strcat(final_value, ".");
+					if (val % 100 != 0) {
+						strcat(final_value, utoa(val % (ull) 100));
+					} else {
+						strcat(final_value, "00");
+					}
 					//printLinkedList();
 				}else{
 					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");

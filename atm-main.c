@@ -81,6 +81,12 @@ int main(int argc, char** argv){
 	char *ipAddr = "127.0.0.1";
 	FILE *file;
 	
+	// TODO -- NEED to figure out what to use here instead of argv[8] -- need to ask Clark abt this whole dreadful section
+	// int neg_check = atoi(argv[8]);
+	// if (neg_check < 0) {
+	// 	printf("ERROR: Please deposit a positive number\n");
+	// 	exit(255);
+	// }
 
 	// welcome to parsing hell
 	int i = 1;
