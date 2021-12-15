@@ -453,7 +453,7 @@ int main(int argc, char** argv){
 					acc = found;
 					// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
 					ull val = (ull) atoi(sent_value_of_operation);
-					if ((found->account_balance - val) >= 0) {
+					if ((int) (found->account_balance - val) >= 0) {
 						found->account_balance -= val;
 						strcat(final_value, "\", \"withdrawal\":");
 						strcat(final_value, utoa(val / (ull) 100));
@@ -464,7 +464,9 @@ int main(int argc, char** argv){
 							strcat(final_value, "00");
 						}
 					} else {
+						printf("DEBUG -- Tried to withdraw more than you had D:\n");
 						is_valid = 0;
+						// TODO -- FIND A SOLUTION TO THIS USAGE ERROR
 					}
 					//printLinkedList();
 				}else{
