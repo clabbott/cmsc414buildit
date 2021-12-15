@@ -384,6 +384,11 @@ int main(int argc, char** argv){
 	}else{
 		strncpy(operation_value,(mode_of_operation==3 ? "0.00" : (argv[recval_locs[5]+1])),13);
 	}
+	if ((int) atoi(operation_value) < 0) {
+		// int overflow check -- maybe it works here??
+		printf("DEBUG -- int overflow check triggered D:<\n");
+		exit(255);
+	} 
 	// printf("DEBUG: operation_value is %d characters long, need to pad %d characters of space to the end.\n",strlen(operation_value),13-strlen(operation_value));
 	for(int i=strlen(operation_value);i<13;i++){
 		strcat(operation_value," ");

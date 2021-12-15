@@ -18,3 +18,5 @@
     functionality for each command (hype). STILL TODO VERY IMPORTANT -- I moved the int overflow protection from bank-main to
     atm-main, to avoid the network socket not closing issue, but now have to find out about how Clark parsed everything in that
     program ("parsing hell"). Not looking forward to that but still hype that it WORKS :D I gotta stop staying up this late
+2:02am 12/15 Matthew -- Got a working solution to simple int overflow attack via negative input -- will look further into
+    whether or not it is the permanent (or only) one. I think it is pretty much done, if not nearly so. neat :D
