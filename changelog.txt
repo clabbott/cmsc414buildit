@@ -20,3 +20,7 @@
     program ("parsing hell"). Not looking forward to that but still hype that it WORKS :D I gotta stop staying up this late
 2:02am 12/15 Matthew -- Got a working solution to simple int overflow attack via negative input -- will look further into
     whether or not it is the permanent (or only) one. I think it is pretty much done, if not nearly so. neat :D
+TOO LATEam 12/16 Matthew -- I think it is pretty much done now -- I made sure it was behaving correctly in the event of invalid
+    or bad commands as well as when bank-main does not pass the repeat attack test. The only thing that I can think of left is
+    to find a way to implement the timer for ATM to close the connection if it does not hear from bank in long enough, since
+    people on Campuswire are saying that that breaks the auto-tests.
