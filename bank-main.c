@@ -108,15 +108,15 @@ char * utoa(unsigned int n)
 
 void insert(char *account,char *account_balance,unsigned char *card_info){
 	int neg_check = atoi(account_balance);
-	printf("DEBUG: Received initial bal %s\n", account_balance);
+	// printf("DEBUG: Received initial bal %s\n", account_balance);
 	if (neg_check < 0) {
-		printf("ERROR: Please deposit a positive number\n");
+		// printf("ERROR: Please deposit a positive number\n");
 		exit(255);
 	}
 	ull bal = (ull) atoi(account_balance);
 	if (bal >= 4294967295.99) {
-		printf("ERROR: Value to deposit too big -- please deposit in smaller increments\n");
-		return;
+		// printf("ERROR: Value to deposit too big -- please deposit in smaller increments\n");
+		exit(255);
 	}
 	struct linked_list_node *new_node = (struct linked_list_node*)malloc(sizeof(struct linked_list_node));
 	
@@ -362,7 +362,7 @@ int main(int argc, char** argv){
 		*(p) = *(p + 1);
 		*(p + 1) = *(p + 2);
 		*(p + 2) = '\0';
-		printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
+		// printf("DEBUG: ATM sent a value of operation of %s.\n",sent_value_of_operation);
 		// printf("DEBUG: Remaining string (corresponding to the anti_repeat value) is %s.\n",&(buffer[122+32+1+13]));
 
 		
@@ -373,51 +373,247 @@ int main(int argc, char** argv){
 
 		// TODO: Check if the card for the user validates 
 		// TODO: Implement a system to check 
-		int is_valid = 1;
+		// printf("DEBUG: Communication is valid so far- defending against repeat attacks.\n");
+		// do everything
+		/* Buffer message format:
+			0 account name (122 characters)
+			1 card file value (32 characters)
+			2 mode of operation (1 character)
+			3 value of operation (13 characters)
+		*/
+		char buffer_resp[300] = "";
+		// created from msg above: char sent_account[123];
+		// to be filled in with random bytes: unsigned char card_rand_bytes[32];
+		unsigned char card_rand_bytes[32];
+		RAND_bytes(card_rand_bytes,32);
+
+		// value doesnt matter
+		char operation_value[14];
+		memset(operation_value,'\0',sizeof(operation_value));
+		for(int i=strlen(operation_value);i<13;i++){
+			strcat(operation_value," ");
+		}
+
+		int buffer_idx_resp = 0;
+		// always 122 characters
+		for(int i=0;i<122;i++){
+			buffer_resp[buffer_idx_resp++] = sent_account[i];
+		}
+		// always 32 wacky characters
+		for(int i=0;i<32;i++){
+			buffer_resp[buffer_idx_resp++] = card_rand_bytes[i];
+		}
+		// placeholder value
+		// for(int i=0;i<strlen("X");i++){
+		// 	buffer_resp[buffer_idx_resp++] = 'X';
+		// }
+		// 1 char
+
+		// printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
+		// strcat(buffer_resp,operation_value);
+		// for(int i=0;i<strlen(operation_value);i++){
+		// 	buffer_resp[buffer_idx_resp++] = operation_value[i];
+		// }
+		// 13 chars
+
+		// printf("DEBUG: Printing entire message:(\n");
+		// for(int i=0;i<buffer_idx_resp;i++){
+		// 	printf("%c",buffer_resp[i]);
+		// }
+		// printf(")\n");
+
+		// encrypt here 
+		unsigned char *ciphertext = malloc(300*sizeof(char*));
+		// unsigned char iv[16]; is read in above
+		// unsigned char sym_key[32]; is read in above
+
+		int ciphertext_len = sym_encrypt(buffer_resp, strlen((char*)buffer_resp),sym_key,iv,ciphertext);
+
+		unsigned char *msg_resp = malloc(300*sizeof(char*)+16);
+		for(int i=0;i<16;i++){
+			msg_resp[i] = iv[i];
+		}
+		for(int i=16;i<16+ciphertext_len;i++){
+			msg_resp[i] = ciphertext[i-16];
+		}
+		int msg_resp_len = ciphertext_len+16;
+
+		// printf("DEBUG: Preparing to send message size %d containing:\n(",msg_resp_len);
+		// for(int i=0;i<16;i++){
+		// 	printf("%c",msg_resp[i]);
+		// }
+		// printf(" iv\n");
+		// for(int i=16;i<msg_resp_len;i++){
+		// 	printf("%c",msg_resp[i]);
+		// }
+		// printf(" msg)\n");
+		bank_send(b, msg_resp, msg_resp_len);
+
+		char buffer_rec2[1024];
+		bank_recv(b, buffer_rec2, sizeof(buffer_rec2));
+		// for(int i=0;i<208;i++){
+		// 	printf("%c",buffer_rec2[i]);
+		// }
+		// printf(" msg");
+		unsigned char decrypted_msg_rec2[300];
+		int decrypted_length_rec2 = sym_decrypt(buffer_rec2,208,sym_key,iv,decrypted_msg_rec2);
+		// printf("DEBUG: Received decrypted message of size %d containing:(\n",decrypted_length_rec2);
+		// for(int i=0;i<122;i++){
+		// 	printf("%c",decrypted_msg_rec2[i]);
+		// }
+		// printf(" acct\n");
+		int repeat = 0;
+		for(int i=122;i<122+16;i++){
+			//printf("%c",decrypted_msg_rec2[i]);
+			if(card_rand_bytes[i-122]!=decrypted_msg_rec2[i]){
+				// printf("(%c!=%c)",card_rand_bytes[i-122],decrypted_msg_rec2[i]);
+				// TODO close connection
+				// printf("DEBUG: Repeat attack detected! Terminating the connection.\n");
+				// TODO terminate the connection
+				repeat = 1;
+			}
+		}
+		// printf(" val\n");
+		// printf("DEBUG: Expected :(\n");
+		// for(int i=0;i<16;i++){
+		// 	printf("%c",card_rand_bytes[i]);
+		// }
+		// printf(" value\n");
+
+		// Verified that this is not a repeat attack
+		// printf("DEBUG: Everything so far is valid- changes to state are now going to be made and returned.\n");
+				int is_valid = 1;
 		struct linked_list_node *acc;
 		char final_value[300] = "\"account\":\"";
 		strcat(final_value, sent_account);
-		if('n'==sent_mode_of_operation[0]){
-			// printf("DEBUG: The atm wants to make a new account.\n");
-			if(find_account(sent_account)!=NULL){
-				// printf("DEBUG: That account for '%s' already exists!\n",sent_account);
-				is_valid = 0;
-			}else{
-				insert(sent_account,sent_value_of_operation,sent_card_value);
-				ull val = (ull) atoi(sent_value_of_operation);
-				printf("DEBUG -- VAL = %s\n", utoa(val / 100));
-				strcat(final_value, "\", \"initial_balance\":");
-				strcat(final_value, utoa(val / 100));
-				strcat(final_value, ".");
-				if (val % 100 != 0) {
-					strcat(final_value, utoa(val % (ull) 100));
-				} else {
-					strcat(final_value, "00");
+		if (repeat) {
+			strcat(final_value, "INVALID");
+		} else {
+			if('n'==sent_mode_of_operation[0]){
+				// printf("DEBUG: The atm wants to make a new account.\n");
+				if(find_account(sent_account)!=NULL){
+					// printf("DEBUG: That account for '%s' already exists!\n",sent_account);
+					is_valid = 0;
+					strcat(final_value, "INVALID");
+				}else{
+					insert(sent_account,sent_value_of_operation,sent_card_value);
+					ull val = (ull) atoi(sent_value_of_operation);
+					// printf("DEBUG -- VAL = %s\n", utoa(val / 100));
+					strcat(final_value, "\", \"initial_balance\":");
+					strcat(final_value, utoa(val / 100));
+					strcat(final_value, ".");
+					if (val % 100 != 0) {
+						strcat(final_value, utoa(val % (ull) 100));
+					} else {
+						strcat(final_value, "00");
+					}
+					//printLinkedList();
 				}
-				//printLinkedList();
-			}
-		}else if('d'==sent_mode_of_operation[0]){
-			// printf("DEBUG: The atm wants to deposit.\n");
-			struct linked_list_node *found = find_account(sent_account);
-			if(found==NULL){
-				// printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
-				is_valid = 0;
-			}else{
-				// check if card is valid
-				int valid = 1;
-				for(int i=0;i<32;i++){
-					if(found->card_info[i]!=sent_card_value[i]){
-						valid = 0;
+			}else if('d'==sent_mode_of_operation[0]){
+				// printf("DEBUG: The atm wants to deposit.\n");
+				struct linked_list_node *found = find_account(sent_account);
+				if(found==NULL){
+					// printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+					is_valid = 0;
+					strcat(final_value, "INVALID");
+				}else{
+					// check if card is valid
+					int valid = 1;
+					for(int i=0;i<32;i++){
+						if(found->card_info[i]!=sent_card_value[i]){
+							valid = 0;
+						}
+					}
+					if(valid == 1){
+						acc = found;
+						// printf("DEBUG: Changing found's values..... matthew started this hopefully its finished and/or working.....\n");
+						// TODO move this operation to later until the atm has passed the repeat attack check
+						ull val = (ull) atoi(sent_value_of_operation);
+						if ((val + found->account_balance) < LLONG_MAX) {
+							found->account_balance += val;
+							strcat(final_value, "\", \"deposit\":");
+							strcat(final_value, utoa(val / (ull) 100));
+							strcat(final_value, ".");
+							if (val % 100 != 0) {
+								strcat(final_value, utoa(val % (ull) 100));
+							} else {
+								strcat(final_value, "00");
+							}
+							//printLinkedList();
+						} else {
+							// printf("ERROR -- Max account limit exceeded -- please withdraw some funds\n");
+							is_valid = 0;
+							strcat(final_value, "INVALID");
+						}
+					}else{
+						// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
+						is_valid = 0;
+						strcat(final_value, "INVALID");
 					}
 				}
-				if(valid == 1){
-					acc = found;
-					// printf("DEBUG: Changing found's values..... matthew started this hopefully its finished and/or working.....\n");
-					// TODO move this operation to later until the atm has passed the repeat attack check
-					ull val = (ull) atoi(sent_value_of_operation);
-					if ((val + found->account_balance) < LLONG_MAX) {
-						found->account_balance += val;
-						strcat(final_value, "\", \"deposit\":");
+			}else if('w'==sent_mode_of_operation[0]){
+				// printf("DEBUG: The atm wants to widthdraw.\n");
+				struct linked_list_node *found = find_account(sent_account);
+				if(found==NULL){
+					// printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+					is_valid = 0;
+					strcat(final_value, "INVALID");
+				}else{
+					// check if card is valid
+					int valid = 1;
+					for(int i=0;i<32;i++){
+						if(found->card_info[i]!=sent_card_value[i]){
+							valid = 0;
+						}
+					}
+					if(valid == 1){
+						acc = found;
+						// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+						ull val = (ull) atoi(sent_value_of_operation);
+						if ((int) (found->account_balance - val) >= 0) {
+							found->account_balance -= val;
+							strcat(final_value, "\", \"withdrawal\":");
+							strcat(final_value, utoa(val / (ull) 100));
+							strcat(final_value, ".");
+							if (val % 100 != 0) {
+								strcat(final_value, utoa(val % (ull) 100));
+							} else {
+								strcat(final_value, "00");
+							}
+						} else {
+							// printf("DEBUG -- Tried to withdraw more than you had D:\n");
+							is_valid = 0;
+							strcat(final_value, "INVALID");
+							// TODO -- FIND A SOLUTION TO THIS USAGE ERROR
+						}
+						//printLinkedList();
+					}else{
+						// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
+						is_valid = 0;
+						strcat(final_value, "INVALID");
+					}
+				}
+			}else if('g'==sent_mode_of_operation[0]){
+				// printf("DEBUG: The atm wants to check the balance of an account.\n");
+				struct linked_list_node *found = find_account(sent_account);
+				if(found==NULL){
+					// printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+					is_valid = 0;
+					strcat(final_value, "INVALID");
+				}else{
+					// check if card is valid
+					int valid = 1;
+					for(int i=0;i<32;i++){
+						if(found->card_info[i]!=sent_card_value[i]){
+							valid = 0;
+						}
+					}
+					if(valid == 1){
+						acc = found;
+						// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
+						// printf("Account for %s has %u funds\n", found->account, found->account_balance);
+						ull val = found->account_balance;
+						strcat(final_value, "\", \"balance:\":");
 						strcat(final_value, utoa(val / (ull) 100));
 						strcat(final_value, ".");
 						if (val % 100 != 0) {
@@ -426,251 +622,74 @@ int main(int argc, char** argv){
 							strcat(final_value, "00");
 						}
 						//printLinkedList();
-					} else {
-						printf("ERROR -- Max account limit exceeded -- please withdraw some funds\n");
+					}else{
+						// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
 						is_valid = 0;
+						strcat(final_value, "INVALID");
 					}
-				}else{
-					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
-					is_valid = 0;
 				}
-			}
-		}else if('w'==sent_mode_of_operation[0]){
-			// printf("DEBUG: The atm wants to widthdraw.\n");
-			struct linked_list_node *found = find_account(sent_account);
-			if(found==NULL){
-				// printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
-				is_valid = 0;
 			}else{
-				// check if card is valid
-				int valid = 1;
-				for(int i=0;i<32;i++){
-					if(found->card_info[i]!=sent_card_value[i]){
-						valid = 0;
-					}
-				}
-				if(valid == 1){
-					acc = found;
-					// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-					ull val = (ull) atoi(sent_value_of_operation);
-					if ((int) (found->account_balance - val) >= 0) {
-						found->account_balance -= val;
-						strcat(final_value, "\", \"withdrawal\":");
-						strcat(final_value, utoa(val / (ull) 100));
-						strcat(final_value, ".");
-						if (val % 100 != 0) {
-							strcat(final_value, utoa(val % (ull) 100));
-						} else {
-							strcat(final_value, "00");
-						}
-					} else {
-						printf("DEBUG -- Tried to withdraw more than you had D:\n");
-						is_valid = 0;
-						// TODO -- FIND A SOLUTION TO THIS USAGE ERROR
-					}
-					//printLinkedList();
-				}else{
-					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
-					is_valid = 0;
-				}
-			}
-		}else if('g'==sent_mode_of_operation[0]){
-			// printf("DEBUG: The atm wants to check the balance of an account.\n");
-			struct linked_list_node *found = find_account(sent_account);
-			if(found==NULL){
-				// printf("DEBUG: The account for '%s' does not exist!\n",sent_account);
+				// printf("DEBUG: The atm sent an invalid mode of operation: '%c'.\n",sent_mode_of_operation[0]);
 				is_valid = 0;
-			}else{
-				// check if card is valid
-				int valid = 1;
-				for(int i=0;i<32;i++){
-					if(found->card_info[i]!=sent_card_value[i]){
-						valid = 0;
-					}
-				}
-				if(valid == 1){
-					acc = found;
-					// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
-					// printf("Account for %s has %u funds\n", found->account, found->account_balance);
-					ull val = (ull) atoi(found->account_balance);
-					strcat(final_value, "\", \"balance:\":");
-					strcat(final_value, utoa(val / (ull) 100));
-					strcat(final_value, ".");
-					if (val % 100 != 0) {
-						strcat(final_value, utoa(val % (ull) 100));
-					} else {
-						strcat(final_value, "00");
-					}
-					//printLinkedList();
-				}else{
-					// printf("DEBUG: Woah woah buddy, you dont have the right card to access that account.\n");
-					is_valid = 0;
-				}
+				strcat(final_value, "INVALID");
 			}
-		}else{
-			// printf("DEBUG: The atm sent an invalid mode of operation: '%c'.\n",sent_mode_of_operation[0]);
-			is_valid = 0;
 		}
 
 		// msg asking for modified echo here
-		if(is_valid==1){
-			// printf("DEBUG: Communication is valid so far- defending against repeat attacks.\n");
-			// do everything
-			/* Buffer message format:
-				0 account name (122 characters)
-				1 card file value (32 characters)
-				2 mode of operation (1 character)
-				3 value of operation (13 characters)
-			*/
-			char buffer_resp[300] = "";
-			// created from msg above: char sent_account[123];
-			// to be filled in with random bytes: unsigned char card_rand_bytes[32];
-			unsigned char card_rand_bytes[32];
-			RAND_bytes(card_rand_bytes,32);
-
-			// value doesnt matter
-			char operation_value[14];
-			memset(operation_value,'\0',sizeof(operation_value));
-			for(int i=strlen(operation_value);i<13;i++){
-				strcat(operation_value," ");
-			}
-
-			int buffer_idx_resp = 0;
-			// always 122 characters
-			for(int i=0;i<122;i++){
-				buffer_resp[buffer_idx_resp++] = sent_account[i];
-			}
-			// always 32 wacky characters
-			for(int i=0;i<32;i++){
-				buffer_resp[buffer_idx_resp++] = card_rand_bytes[i];
-			}
-			// placeholder value
-			// for(int i=0;i<strlen("X");i++){
-			// 	buffer_resp[buffer_idx_resp++] = 'X';
-			// }
-			// 1 char
-
-			// printf("Operation value is equal to '%s'.\nIt is %d characters long.\n",operation_value,strlen(operation_value));
-			// strcat(buffer_resp,operation_value);
-			// for(int i=0;i<strlen(operation_value);i++){
-			// 	buffer_resp[buffer_idx_resp++] = operation_value[i];
-			// }
-			// 13 chars
-
-			// printf("DEBUG: Printing entire message:(\n");
-			// for(int i=0;i<buffer_idx_resp;i++){
-			// 	printf("%c",buffer_resp[i]);
-			// }
-			// printf(")\n");
-
-			// encrypt here 
-			unsigned char *ciphertext = malloc(300*sizeof(char*));
-			// unsigned char iv[16]; is read in above
-			// unsigned char sym_key[32]; is read in above
-
-			int ciphertext_len = sym_encrypt(buffer_resp, strlen((char*)buffer_resp),sym_key,iv,ciphertext);
-
-			unsigned char *msg_resp = malloc(300*sizeof(char*)+16);
-			for(int i=0;i<16;i++){
-				msg_resp[i] = iv[i];
-			}
-			for(int i=16;i<16+ciphertext_len;i++){
-				msg_resp[i] = ciphertext[i-16];
-			}
-			int msg_resp_len = ciphertext_len+16;
-
-			// printf("DEBUG: Preparing to send message size %d containing:\n(",msg_resp_len);
-			// for(int i=0;i<16;i++){
-			// 	printf("%c",msg_resp[i]);
-			// }
-			// printf(" iv\n");
-			// for(int i=16;i<msg_resp_len;i++){
-			// 	printf("%c",msg_resp[i]);
-			// }
-			// printf(" msg)\n");
-			bank_send(b, msg_resp, msg_resp_len);
-
-			char buffer_rec2[1024];
-			bank_recv(b, buffer_rec2, sizeof(buffer_rec2));
-			// for(int i=0;i<208;i++){
-			// 	printf("%c",buffer_rec2[i]);
-			// }
-			// printf(" msg");
-			unsigned char decrypted_msg_rec2[300];
-			int decrypted_length_rec2 = sym_decrypt(buffer_rec2,208,sym_key,iv,decrypted_msg_rec2);
-			// printf("DEBUG: Received decrypted message of size %d containing:(\n",decrypted_length_rec2);
-			// for(int i=0;i<122;i++){
-			// 	printf("%c",decrypted_msg_rec2[i]);
-			// }
-			// printf(" acct\n");
-			for(int i=122;i<122+16;i++){
-				//printf("%c",decrypted_msg_rec2[i]);
-				if(card_rand_bytes[i-122]!=decrypted_msg_rec2[i]){
-					// printf("(%c!=%c)",card_rand_bytes[i-122],decrypted_msg_rec2[i]);
-					// TODO close connection
-					// printf("DEBUG: Repeat attack detected! Terminating the connection.\n");
-					// TODO terminate the connection
-				}
-			}
-			// printf(" val\n");
-			// printf("DEBUG: Expected :(\n");
-			// for(int i=0;i<16;i++){
-			// 	printf("%c",card_rand_bytes[i]);
-			// }
-			// printf(" value\n");
-
-			// Verified that this is not a repeat attack
-			printf("DEBUG: Everything so far is valid- changes to state are now going to be made and returned.\n");
-			
-
-			// MATTHEW TODO MAKE CHANGES TO BANK STATE HERE- EVERYHTING IS VERIFIED NOW
-			// Am going to finish this tomorrow -- want to parse this string to be accurate to last transaction
-			// Shouldn't be too tough
-			//char final_value[300] = "\"account\":\"bob\",\"initial_balance\":\"10.00\"\0";
-			// char final_value[300] = acc->account;
-			// char bal[20];
-			// strcat(final_value, "\"balance\":");
-			// sprintf(bal, "%u", acc->account_balance);
-			// strcat(final_value, bal);
-			// strcat(final_value, "\"\0");
-
-			printLinkedList();
-			// CHANGES ARE DONE BEING MADE HERE
-			// NOW PRINTING FINAL VALUE FOR BANK
-			for(int i=strlen(final_value);i<300;i++){
-				strcat(final_value," ");
-			}
-			for(int i=0;i<300;i++){
-				if(final_value[i]!=' '){
-					printf("%c",final_value[i]);
+		if(is_valid==1 && repeat==0){
+			for (int i=0; final_value[i] != '\0'; i++) {
+				if (final_value[i] != ' ') {
+					printf("%c", final_value[i]);
 				}
 			}
 			printf("\n");
-
-			// always 300 characters
-			unsigned char final_buffer_resp[300] = "";
-			for(int i=0;i<300;i++){
-				final_buffer_resp[i] = final_value[i];
-			}
-
-			unsigned char final_ciphertext[500];
-			int final_ciphertext_len = sym_encrypt(final_buffer_resp, 300 ,sym_key,iv,final_ciphertext);
-
-			unsigned char final_message[600];
-			for(int i=0;i<16;i++){
-				final_message[i] = iv[i];
-			}
-			for(int i=16;i<16+final_ciphertext_len;i++){
-				final_message[i] = final_ciphertext[i-16];
-			}
-			int final_message_len = final_ciphertext_len+16;
-			// decrypted message is 300 characters long 
-			// printf("DEBUG: Final encrypted message is %d characters long.\n",final_message_len);
-			bank_send(b, final_message, final_message_len);
-		}else{
-			printf("DEBUG: Operation was not valid- no state changes will be made.\n");
 		}
-		
+
+		// MATTHEW TODO MAKE CHANGES TO BANK STATE HERE- EVERYHTING IS VERIFIED NOW
+		// Am going to finish this tomorrow -- want to parse this string to be accurate to last transaction
+		// Shouldn't be too tough
+		//char final_value[300] = "\"account\":\"bob\",\"initial_balance\":\"10.00\"\0";
+		// char final_value[300] = acc->account;
+		// char bal[20];
+		// strcat(final_value, "\"balance\":");
+		// sprintf(bal, "%u", acc->account_balance);
+		// strcat(final_value, bal);
+		// strcat(final_value, "\"\0");
+
+		//printLinkedList();
+		// CHANGES ARE DONE BEING MADE HERE
+		// NOW PRINTING FINAL VALUE FOR BANK
+		// for(int i=strlen(final_value);i<300;i++){
+		// 	strcat(final_value," ");
+		// }
+		// for(int i=0;i<300;i++){
+		// 	if(final_value[i]!=' '){
+		// 		printf("%c",final_value[i]);
+		// 	}
+		// }
+		// printf("\n");
+
+		// always 300 characters
+		unsigned char final_buffer_resp[300] = "";
+		for(int i=0;i<300;i++){
+			final_buffer_resp[i] = final_value[i];
+		}
+
+		unsigned char final_ciphertext[500];
+		int final_ciphertext_len = sym_encrypt(final_buffer_resp, 300 ,sym_key,iv,final_ciphertext);
+
+		unsigned char final_message[600];
+		for(int i=0;i<16;i++){
+			final_message[i] = iv[i];
+		}
+		for(int i=16;i<16+final_ciphertext_len;i++){
+			final_message[i] = final_ciphertext[i-16];
+		}
+		int final_message_len = final_ciphertext_len+16;
+		// decrypted message is 300 characters long 
+		// printf("DEBUG: Final encrypted message is %d characters long.\n",final_message_len);
+		bank_send(b, final_message, final_message_len);
+	
 
 		/* when finished processing commands ...*/
 		close(b->clientfd);

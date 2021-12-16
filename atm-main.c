@@ -18,26 +18,26 @@ int sym_encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
 
 	// creat and init context
 	if(!(ctx = EVP_CIPHER_CTX_new())){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 16\n");
+		//printf("DEBUG: Wuhwoh things are getting fonky at line 16\n");
 		exit(255);
 	}
 
 	// init encryption operation 
 	if(1!= EVP_EncryptInit_ex(ctx,EVP_aes_256_cbc(),NULL,key,iv)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 22\n");
+		//printf("DEBUG: Wuhwoh things are getting fonky at line 22\n");
 		exit(255);
 	}
 
 	// provide message to be encrypted/ get output
 	if(1!= EVP_EncryptUpdate(ctx,ciphertext,&len,plaintext,plaintext_len)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
+		//printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
 		exit(255);
 	}
 	ciphertext_len = len;
 
 	// finalize the encryption 
 	if(1!=EVP_EncryptFinal_ex(ctx,ciphertext+len,&len)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
+		//printf("DEBUG: Wuhwoh things are getting fonky at line 28\n");
 		exit(255);
 	}
 	ciphertext_len += len;
@@ -54,19 +54,19 @@ int sym_decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *ke
 
 	// create and init context
 	if(!(ctx = EVP_CIPHER_CTX_new())){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 20\n");
+		//printf("DEBUG: Wuhwoh things are getting fonky at line 20\n");
 		exit(255);
 	}
 
 	// init decrypt operation
 	if(1!= EVP_DecryptInit_ex(ctx,EVP_aes_256_cbc(),NULL,key,iv)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 26\n");
+		//printf("DEBUG: Wuhwoh things are getting fonky at line 26\n");
 		exit(255);
 	}
 
 	// put decrypted message, get output
 	if(1!= EVP_DecryptUpdate(ctx,plaintext,&len,ciphertext,ciphertext_len)){
-		printf("DEBUG: Wuhwoh things are getting fonky at line 32\n");
+		//printf("DEBUG: Wuhwoh things are getting fonky at line 32\n");
 		exit(255);
 	}
 	plaintext_len = len;
@@ -386,7 +386,7 @@ int main(int argc, char** argv){
 	}
 	if ((int) atoi(operation_value) < 0) {
 		// int overflow check -- maybe it works here??
-		printf("DEBUG -- int overflow check triggered D:<\n");
+		//printf("DEBUG -- int overflow check triggered D:<\n");
 		exit(255);
 	} 
 	// printf("DEBUG: operation_value is %d characters long, need to pad %d characters of space to the end.\n",strlen(operation_value),13-strlen(operation_value));
@@ -644,6 +644,10 @@ int main(int argc, char** argv){
 
 	unsigned char final_decrypted_msg[330];
 	int final_decrypted_length = sym_decrypt(final_encrypted_msg,320-16,auth_file_buffer,iv_resp,final_decrypted_msg);
+	if (strstr(final_decrypted_msg, "INVALID")) {
+		// printf("DEBUG -- INVALID COMMAND %s -- EXITING\n", final_decrypted_msg);
+		exit(255);
+	}
 
 	// printf("DEBUG: Final length of decrypted msg is %d, contents:\n",final_decrypted_length);
 	for(int i=0;i<final_decrypted_length;i++){
