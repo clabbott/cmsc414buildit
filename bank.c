@@ -35,6 +35,17 @@ Bank* bank_create(char *auth_file, char *ip, unsigned short port)
 	listen(s, 5);
 
 	bank->sockfd = s;
+	struct timeval timeout;      
+    timeout.tv_sec = 100;
+    timeout.tv_usec = 0;
+
+    if (setsockopt (bank->sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
+                sizeof(timeout)) < 0)
+        exit(255);
+
+    if (setsockopt (bank->sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout,
+                sizeof(timeout)) < 0)
+        exit(255);
 
 #undef BOOL_CHK
 

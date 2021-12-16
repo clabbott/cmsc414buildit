@@ -27,6 +27,18 @@ ATM* atm_create(char *ip, unsigned short port)
 	BOOL_CHK(atm->sockfd < 0, "could not create socket");
 
 	BOOL_CHK(connect(atm->sockfd, (struct sockaddr*)&(atm->bank_addr), sizeof(atm->bank_addr)) < 0, "could not connect");
+	struct timeval timeout;      
+    timeout.tv_sec = 100;
+    timeout.tv_usec = 0;
+
+    if (setsockopt (atm->sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
+                sizeof(timeout)) < 0)
+        exit(255);
+
+    if (setsockopt (atm->sockfd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout,
+                sizeof(timeout)) < 0)
+        exit(255);
+
 
 #undef BOOL_CHK
 	

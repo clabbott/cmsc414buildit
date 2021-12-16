@@ -484,7 +484,7 @@ int main(int argc, char** argv){
 		// printf("DEBUG: Everything so far is valid- changes to state are now going to be made and returned.\n");
 				int is_valid = 1;
 		struct linked_list_node *acc;
-		char final_value[300] = "\"account\":\"";
+		char final_value[300] = "{\"account\":\"";
 		strcat(final_value, sent_account);
 		if (repeat) {
 			strcat(final_value, "INVALID");
@@ -637,6 +637,7 @@ int main(int argc, char** argv){
 
 		// msg asking for modified echo here
 		if(is_valid==1 && repeat==0){
+			strcat(final_value, "}");
 			for (int i=0; final_value[i] != '\0'; i++) {
 				if (final_value[i] != ' ') {
 					printf("%c", final_value[i]);
