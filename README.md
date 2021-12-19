@@ -1,4 +1,6 @@
 # cmsc414buildit
+REFER TO BUILD DIRECTORY FOR CODE
+
 Potential attacks: 
 Man in the middle (Impersonating client/server maybe?)
 Repeat attacks (Listening to and repeating old messages to make an effect happen)
