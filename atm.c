@@ -51,6 +51,7 @@ ATM* atm_create(char *ip, unsigned short port)
 
 void atm_free(ATM *atm){
 	close(atm->sockfd);
+	free(atm);
 // TODO
 }
 

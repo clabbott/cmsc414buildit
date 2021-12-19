@@ -53,13 +53,16 @@ Bank* bank_create(char *auth_file, char *ip, unsigned short port)
 
 	// Set up the protocol state
 	// TODO set up more, as needed
-
+	fflush(stdout);
+	printf("created\n");
+	fflush(stdout);
 	return bank;
 }
 
 void bank_free(Bank *bank){
 
 	close(bank->sockfd);
+	free(bank);
 	// TODO
 }
 

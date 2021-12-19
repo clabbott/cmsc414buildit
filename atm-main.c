@@ -650,17 +650,19 @@ int main(int argc, char** argv){
 	}
 
 	// printf("DEBUG: Final length of decrypted msg is %d, contents:\n",final_decrypted_length);
+	fflush(stdout);
 	for(int i=0;i<final_decrypted_length;i++){
 		if(final_decrypted_msg[i]!=' '){
 			printf("%c",final_decrypted_msg[i]);
 		}
 	}
 	printf("\n");
+	fflush(stdout);
 	
 	atm_free(atm);
 	
 
 	// Implement how atm protocol will work: sanitizing inputs and using different modes of operations
 
-	return EXIT_SUCCESS;
+	return 0;
 }

@@ -266,8 +266,6 @@ int main(int argc, char** argv){
 
 	Bank *b = bank_create(auth_file_name, ip, port);
 
-	
-
 	/* process each incoming client, one at a time, until complete */
 	for(;;) {
 
@@ -469,7 +467,6 @@ int main(int argc, char** argv){
 				// printf("(%c!=%c)",card_rand_bytes[i-122],decrypted_msg_rec2[i]);
 				// TODO close connection
 				// printf("DEBUG: Repeat attack detected! Terminating the connection.\n");
-				// TODO terminate the connection
 				repeat = 1;
 			}
 		}
@@ -503,9 +500,10 @@ int main(int argc, char** argv){
 					strcat(final_value, utoa(val / 100));
 					strcat(final_value, ".");
 					if (val % 100 != 0) {
+						
 						strcat(final_value, utoa(val % (ull) 100));
 					} else {
-						strcat(final_value, "00");
+					 	strcat(final_value, "00");
 					}
 					//printLinkedList();
 				}
@@ -534,10 +532,12 @@ int main(int argc, char** argv){
 							strcat(final_value, "\", \"deposit\":");
 							strcat(final_value, utoa(val / (ull) 100));
 							strcat(final_value, ".");
-							if (val % 100 != 0) {
+							if (val % 100 >= 10) {
+								
 								strcat(final_value, utoa(val % (ull) 100));
 							} else {
-								strcat(final_value, "00");
+							 	strcat(final_value, "0");
+								strcat(final_value, utoa(val % (ull) 100));
 							}
 							//printLinkedList();
 						} else {
@@ -572,13 +572,14 @@ int main(int argc, char** argv){
 						ull val = (ull) atoi(sent_value_of_operation);
 						if ((int) (found->account_balance - val) >= 0) {
 							found->account_balance -= val;
-							strcat(final_value, "\", \"withdrawal\":");
+							strcat(final_value, "\", \"withdraw\":");
 							strcat(final_value, utoa(val / (ull) 100));
 							strcat(final_value, ".");
-							if (val % 100 != 0) {
+							if (val % 100 >= 10) {
 								strcat(final_value, utoa(val % (ull) 100));
 							} else {
-								strcat(final_value, "00");
+								strcat(final_value, "0");
+								strcat(final_value, utoa(val % (ull) 100));
 							}
 						} else {
 							// printf("DEBUG -- Tried to withdraw more than you had D:\n");
@@ -613,13 +614,15 @@ int main(int argc, char** argv){
 						// printf("DEBUG: Changing found's values..... implement this as soon as I know whether we have to store superlarge numbers or not.....\n");
 						// printf("Account for %s has %u funds\n", found->account, found->account_balance);
 						ull val = found->account_balance;
-						strcat(final_value, "\", \"balance:\":");
+						strcat(final_value, "\", \"balance\":");
 						strcat(final_value, utoa(val / (ull) 100));
 						strcat(final_value, ".");
-						if (val % 100 != 0) {
+						if (val % 100 >= 10) {
+							
 							strcat(final_value, utoa(val % (ull) 100));
 						} else {
-							strcat(final_value, "00");
+							strcat(final_value, "0");
+							strcat(final_value, utoa(val % (ull) 100));
 						}
 						//printLinkedList();
 					}else{
@@ -638,12 +641,14 @@ int main(int argc, char** argv){
 		// msg asking for modified echo here
 		if(is_valid==1 && repeat==0){
 			strcat(final_value, "}");
+			fflush(stdout);
 			for (int i=0; final_value[i] != '\0'; i++) {
 				if (final_value[i] != ' ') {
 					printf("%c", final_value[i]);
 				}
 			}
 			printf("\n");
+			fflush(stdout);
 		}
 
 		// MATTHEW TODO MAKE CHANGES TO BANK STATE HERE- EVERYHTING IS VERIFIED NOW
@@ -702,5 +707,5 @@ int main(int argc, char** argv){
 	
 	// Implement how atm protocol will work: sanitizing inputs and using different modes of operations
 
-	return EXIT_SUCCESS;
+	return 0;
 }
